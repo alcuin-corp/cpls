@@ -10,7 +10,6 @@ namespace PLS
         public DbSet<Tenant> Tenants { get; set; }
         public DbSet<Server> Servers { get; set; }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Tenant>()
