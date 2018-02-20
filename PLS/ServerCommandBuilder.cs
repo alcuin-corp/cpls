@@ -15,8 +15,9 @@ namespace PLS
         {
             self.Command("server", command =>
             {
-                command.Description = "Those commands are related to server manipulations.";
                 command.AddHelp();
+
+                command.Description = "Those commands 😁 are related to server manipulations.";
                 foreach (var builder in _builders)
                 {
                     builder.Apply(command);

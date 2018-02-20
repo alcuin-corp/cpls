@@ -1,66 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.IO;
+using System.Linq;
+using AutoMapper.Configuration;
 using Microsoft.Extensions.CommandLineUtils;
 
 namespace PLS
 {
-    public static class RequestsExtensions
+    public static class ConfigCommandBuilderExtensions
     {
-        public static HttpResponseMessage Get(this Requests self, string uri, object headers)
+        public static CommandArgument AddUrlArgument(this CommandLineApplication cli)
         {
-            return self.Get(new Uri(uri), headers);
-        }
-    }
-
-    public class Requests
-    {
-        private readonly Uri _baseUri;
-
-        public Requests(string baseUri)
-        {
-            _baseUri = new Uri(baseUri);
-        }
-
-        public Task<HttpResponseMessage> GetAsync(string uri, object headers)
-        {
-            var req = new HttpRequestMessage(HttpMethod.Get, uri);
-            var cli = new HttpClient {BaseAddress = new Uri(uri)};
-            return cli.SendAsync(req);
-        }
-
-        public Task<HttpResponseMessage> PostAsync(string uri, object headers, object body)
-        {
-            var req = new HttpRequestMessage(HttpMethod.Post, uri);
-            var cli = new HttpClient { BaseAddress = new Uri(uri) };
-            return cli.SendAsync(req);
+            return cli.Argument("[url]", "The config api url");
         }
     }
 
     public class ConfigCommandBuilder : IConfigCommandBuilder
     {
-        public void AddConfigExportCommand(CommandLineApplication self)
-        {
-            self.Description = "Create a export of the targetted application into a JSON file.";
-            self.AddHelp();
+        private readonly ApiClientFactory _connect;
 
-            var urlArg = self.Argument("[url]", "The config api url");
+        public static (CommandArgument, CommandArgument, CommandArgument, CommandArgument) AddImportExportArguments(CommandLineApplication self)
+        {
+            var urlArg = self.AddUrlArgument();
             var loginArg = self.Argument("[login]", "The api login");
             var passwordArg = self.Argument("[password]", "The api password");
+            var fileArg = self.Argument("[file]", "The destination file");
+            return (urlArg, loginArg, passwordArg, fileArg);
+        }
+
+        public ConfigCommandBuilder(ApiClientFactory connect)
+        {
+            _connect = connect;
+        }
+
+        public void AddConfigExportCommand(CommandLineApplication self)
+        {
+            self.AddHelp();
+
+            self.Description = "Create a export of the targetted application into a JSON file.";
+
+            var (urlArg, loginArg, passwordArg, fileArg) = AddImportExportArguments(self);
 
             self.OnExecute(async () =>
             {
-                var cli = new HttpClient {BaseAddress = new Uri(urlArg.Value)};
-
-                
-                cli.GetAsync("/login");
-
-                var resp = await cli.GetAsync("/config");
-                if (!resp.IsSuccessStatusCode)
+                var api = _connect(urlArg.Value, loginArg.Value, passwordArg.Value);
+                var config = await api.GetConfig();
+                using (var fl = File.OpenWrite(fileArg.Value))
+                using (var tw = new StreamWriter(fl))
                 {
-                    throw new Exception($"Status: {resp.StatusCode}");
+                    tw.Write(config);
                 }
                 return 0;
             });
@@ -68,18 +56,40 @@ namespace PLS
 
         public void AddConfigImportCommand(CommandLineApplication self)
         {
-            
+            self.AddHelp();
+
+            self.Description = "Import targeted JSON file into an application.";
+
+            var (urlArg, loginArg, passwordArg, fileArg) = AddImportExportArguments(self);
+            var maybeOutputFile = self.Option("-o|--outputFile", "A file in which the import result will be stored.",
+                CommandOptionType.SingleValue);
+
+            self.OnExecute(async () =>
+            {
+                var api = _connect(urlArg.Value, loginArg.Value, passwordArg.Value);
+                var result = await api.PostConfig(fileArg.Value);
+                if (maybeOutputFile.HasValue())
+                {
+                    var outputFile = maybeOutputFile.Value();
+                    using (var file = File.OpenWrite(outputFile))
+                    using (var writer = new StreamWriter(file))
+                    {
+                        writer.Write(result);
+                    }
+                }
+                return 0;
+            });
         }
 
         public void Apply(CommandLineApplication self)
         {
             self.Command("config", command =>
             {
-                command.Description = "Those commands are related to config import/export from api.";
                 command.AddHelp();
 
-                self.Command("export", AddConfigExportCommand);
-                self.Command("import", AddConfigImportCommand);
+                command.Description = "Those commands are related to config import/export from api.";
+                command.Command("export", AddConfigExportCommand);
+                command.Command("import", AddConfigImportCommand);
             });
         }
 
