@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.EntityFrameworkCore.Extensions.Internal;
 using Microsoft.Extensions.CommandLineUtils;
 
 namespace PLS
@@ -12,11 +13,12 @@ namespace PLS
             _db = db;
         }
 
-        public void Apply(CommandLineApplication src)
+        public void Apply(CommandLineApplication self)
         {
-            src.Command("add", command =>
+            self.Command("add", command =>
             {
                 command.AddHelp();
+
                 var nameArg = command.Argument("[name]", "The server name");
                 var hostnameArg = command.Argument("[hostname]", "The server hostname");
                 var loginArg = command.Argument("[login]", "The server login");

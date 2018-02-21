@@ -10,16 +10,7 @@ namespace PLS
         {
             try
             {
-                var app = Application.BuildContainer();
-                var cmdLine = new CommandLineApplication { Name = "PLS" }.AddHelp();
-                cmdLine.AddHelp();
-                var builders = app.GetRequiredService<ICommandBuilder[]>();
-
-                foreach (var builder in builders)
-                {
-                    builder.Apply(cmdLine);
-                }
-                cmdLine.Execute(args);
+                Application.Parse(args);
             }
             catch (Exception e)
             {

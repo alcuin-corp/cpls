@@ -20,6 +20,7 @@ namespace PLS
             self.Command("add", command =>
             {
                 command.AddHelp();
+
                 var nameArg = command.Argument("[name]", "The tenant name");
                 var serverIdArg = command.Argument("[server]", "The server hosting this tenant");
                 var appNameArg = command.Argument("[application-name]", "The tenant application name");
@@ -44,7 +45,8 @@ namespace PLS
                     var tenant = _db.Tenants.Find(newTenant.Id);
                     if (tenant != null)
                     {
-                        Console.WriteLine($"Tenant {nameArg.Value} already exists, we update it with the provided values ...");
+                        Console.WriteLine(
+                            $"Tenant {nameArg.Value} already exists, we update it with the provided values ...");
                         _mapper.Map(newTenant, tenant);
                     }
                     else
