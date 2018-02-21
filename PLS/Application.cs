@@ -2,6 +2,7 @@
 using System.Data;
 using System.IO;
 using System.Reflection;
+using System.Text;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.CommandLineUtils;
@@ -13,6 +14,8 @@ namespace PLS
     {
         public static void Parse(params string[] args)
         {
+            Console.OutputEncoding = Encoding.UTF8;
+
             var app = BuildContainer();
             var cmdLine = new CommandLineApplication {Name = "PLS"};
             cmdLine.AddHelp();
@@ -30,21 +33,15 @@ namespace PLS
             services.AddScoped<ConfigCommandBuilder>();
             services.AddScoped<AddTenantCommandBuilder>();
             services.AddScoped<AddServerCommandBuilder>();
+            services.AddScoped<ListServerCommandBuilder>();
 
-            services.AddScoped(provider =>
-            {
-                var add = provider.GetRequiredService<AddTenantCommandBuilder>();
-                return new TenantCommandBuilder(add);
-            });
-            services.AddScoped(provider =>
-            {
-                var add = provider.GetRequiredService<AddServerCommandBuilder>();
-                return new ServerCommandBuilder(add);
-            });
             services.AddScoped(provider => new ICommandBuilder[]
             {
-                provider.GetRequiredService<TenantCommandBuilder>(),
-                provider.GetRequiredService<ServerCommandBuilder>(),
+                //new GroupCommandBuilder("server",
+                //    provider.GetRequiredService<AddServerCommandBuilder>(),
+                //    provider.GetRequiredService<ListServerCommandBuilder>()
+                //),
+                //new GroupCommandBuilder("tenant", provider.GetRequiredService<AddTenantCommandBuilder>()),
                 provider.GetRequiredService<ConfigCommandBuilder>(),
             });
         }

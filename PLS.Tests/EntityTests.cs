@@ -29,7 +29,6 @@ namespace PLS.Tests
         public void Args()
         {
             Application.Parse("config", "export", "http://localhost/ConfigApi/Alcuin1", "admin", "123", "alcuin1.json");
-            Application.Parse("config", "import", "http://localhost/ConfigApi/Alcuin1", "admin", "123", "alcuin1.json");
         }
     }
 
