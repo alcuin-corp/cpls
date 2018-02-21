@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 
 namespace PLS
 {
-    public delegate IApiClient ApiClientFactory(string uri, string login, string password);
-
     public class ApiClient : IApiClient
     {
         private readonly string _apiUri;

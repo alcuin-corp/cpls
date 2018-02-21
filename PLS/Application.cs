@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Data;
 using System.IO;
-using System.Reflection;
 using System.Text;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
@@ -35,15 +33,39 @@ namespace PLS
             services.AddScoped<AddServerCommandBuilder>();
             services.AddScoped<ListServerCommandBuilder>();
 
-            services.AddScoped(provider => new ICommandBuilder[]
+            ICommandBuilder CreateServerCommandBuilder(IServiceProvider provider)
             {
-                //new GroupCommandBuilder("server",
-                //    provider.GetRequiredService<AddServerCommandBuilder>(),
-                //    provider.GetRequiredService<ListServerCommandBuilder>()
-                //),
-                //new GroupCommandBuilder("tenant", provider.GetRequiredService<AddTenantCommandBuilder>()),
+                return new GroupCommandBuilder("server",
+                    provider.GetRequiredService<AddServerCommandBuilder>(),
+                    provider.GetRequiredService<ListServerCommandBuilder>()
+                );
+            }
+
+            ICommandBuilder CreateTenantCommandBuilder(IServiceProvider provider)
+            {
+                return new GroupCommandBuilder("tenant",
+                    provider.GetRequiredService<AddTenantCommandBuilder>()
+                );
+            }
+
+            services.AddScoped(provider => new []
+            {
+                CreateServerCommandBuilder(provider),
+                CreateTenantCommandBuilder(provider),
                 provider.GetRequiredService<ConfigCommandBuilder>(),
             });
+        }
+
+        public static string GetOrCreateConfigFolderPath()
+        {
+            var homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            var configPath = Path.Combine(homePath, ".pls");
+            if (!Directory.Exists(configPath))
+            {
+                Console.WriteLine("Create config folder into your home directory.");
+                Directory.CreateDirectory(configPath);
+            }
+            return configPath;
         }
 
         public static IServiceProvider BuildContainer()
@@ -62,8 +84,7 @@ namespace PLS
             });
             services.AddDbContext<PlsDbContext>(builder =>
             {
-                var rootPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                var dbPath = Path.Combine(rootPath, "pls.db");
+                var dbPath = Path.Combine(GetOrCreateConfigFolderPath(), "pls.db");
                 builder.UseSqlite($"Data Source={dbPath};");
             });
             var container = services.BuildServiceProvider();
