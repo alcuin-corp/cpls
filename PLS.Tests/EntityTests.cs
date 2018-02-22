@@ -31,6 +31,11 @@ namespace PLS.Tests
             Application.Parse("config", "export", "http://localhost/ConfigApi/Alcuin1", "admin", "123", "alcuin1.json");
         }
         [Fact]
+        public void ServerList()
+        {
+            Application.Parse("server", "list");
+        }
+        [Fact]
         public void ListTenant()
         {
             Application.Parse("tenant", "list");

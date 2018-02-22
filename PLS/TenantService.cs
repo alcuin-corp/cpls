@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Dapper;
 
 namespace PLS
@@ -18,7 +19,7 @@ namespace PLS
 
         public TenantService(Tenant tenant, PlsDbContext db, ServerServiceFactory serverEnhancer)
         {
-            _tenant = tenant;
+            _tenant = tenant ?? throw new ArgumentNullException(nameof(tenant));
             var server = db.Servers.Find(tenant.ServerId);
             _server = serverEnhancer(server);
         }

@@ -41,7 +41,7 @@ namespace PLS
 
         public ServerService(Server server)
         {
-            _server = server;
+            _server = server ?? throw new ArgumentNullException(nameof(server));
         }
 
         public IDbConnection OpenConnection()
@@ -49,8 +49,29 @@ namespace PLS
             return new SqlConnection($"Server={_server.Hostname};User Id={_server.Login};Password={_server.Password};");
         }
 
-        public string BackupDirectory => Path.Combine(_server.InstallPath, "Backup");
-        public string DataDirectory => Path.Combine(_server.InstallPath, "DATA");
+        public string BackupDirectory
+        {
+            get
+            {
+                using (var conn = OpenConnection())
+                {
+                    var rows = conn.Query("EXEC master.dbo.xp_instance_regread " +
+                                          "N'HKEY_LOCAL_MACHINE', N'Software\\Microsoft\\MSSQLServer\\MSSQLServer',N'BackupDirectory'").ToList();
+                    return rows[0].Data;
+                }
+            }
+        }
+
+        public string DataDirectory
+        {
+            get
+            {
+                using (var conn = OpenConnection())
+                {
+                    return conn.QuerySingle<string>("SELECT CONVERT(SYSNAME, SERVERPROPERTY('InstanceDefaultDataPath'))");
+                }
+            }
+        }
 
         public void Backup(string database, string backupFile)
         {

@@ -25,7 +25,6 @@ namespace PLS.CommandBuilders
             var hostnameArg = command.Argument("[hostname]", "The server hostname");
             var loginArg = command.Argument("[login]", "The server login");
             var passwordArg = command.Argument("[password]", "The server password");
-            var installPathArg = command.Argument("[install-path]", "The SQLServer installation directory root (must contain DATA and Backup directories)");
 
             command.OnExecute(() =>
             {
@@ -35,7 +34,6 @@ namespace PLS.CommandBuilders
                     Hostname = hostnameArg.Value,
                     Login = loginArg.Value,
                     Password = passwordArg.Value,
-                    InstallPath = installPathArg.Value
                 });
                 return 0;
             });

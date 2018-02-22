@@ -9,8 +9,5 @@ namespace PLS
         public string Hostname { get; set; } = "localhost";
         public string Login { get; set; } = "sa";
         public string Password { get; set; } = "P@ssw0rd";
-
-        [Required]
-        public string InstallPath { get; set; }
     }
 }

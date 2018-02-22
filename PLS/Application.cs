@@ -34,41 +34,20 @@ namespace PLS
 
             services.AddScoped<ConfigCommandBuilder>();
 
+            services.AddScoped<DbServerCommandBuilder>();
+            services.AddScoped<ServerCommandBuilder>();
+            services.AddScoped<TenantCommandBuilder>();
             services.AddScoped<AddTenantCommandBuilder>();
-            services.AddScoped<ListTenantCommandBuilder>();
             services.AddScoped<RestoreTenantCommandBuilder>();
 
             services.AddScoped<AddServerCommandBuilder>();
-            services.AddScoped<ListServerCommandBuilder>();
 
-            ICommandBuilder CreateServerCommandBuilder(IServiceProvider provider)
+            services.AddScoped(provider => new ICommandBuilder[]
             {
-                return new GroupCommandBuilder("server",
-                    provider.GetRequiredService<AddServerCommandBuilder>(),
-                    provider.GetRequiredService<ListServerCommandBuilder>()
-                );
-            }
-
-            ICommandBuilder CreateTenantCommandBuilder(IServiceProvider provider)
-            {
-                return new GroupCommandBuilder("tenant",
-                    provider.GetRequiredService<AddTenantCommandBuilder>(),
-                    provider.GetRequiredService<ListTenantCommandBuilder>(),
-                    provider.GetRequiredService<RestoreTenantCommandBuilder>()
-                );
-            }
-
-            ICommandBuilder[] CreateCommandBuilders(IServiceProvider provider)
-            {
-                return new[]
-                {
-                    CreateServerCommandBuilder(provider),
-                    CreateTenantCommandBuilder(provider),
-                    provider.GetRequiredService<ConfigCommandBuilder>(),
-                };
-            }
-
-            services.AddScoped(CreateCommandBuilders);
+                provider.GetRequiredService<ServerCommandBuilder>(),
+                provider.GetRequiredService<TenantCommandBuilder>(),
+                provider.GetRequiredService<ConfigCommandBuilder>(),
+            });
         }
 
         public static string GetOrCreateConfigFolderPath()
