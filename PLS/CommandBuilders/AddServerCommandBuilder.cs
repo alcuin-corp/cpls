@@ -1,8 +1,7 @@
 ﻿using System;
-using Microsoft.EntityFrameworkCore.Extensions.Internal;
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace PLS
+namespace PLS.CommandBuilders
 {
     public class AddServerCommandBuilder : ICommandBuilder
     {

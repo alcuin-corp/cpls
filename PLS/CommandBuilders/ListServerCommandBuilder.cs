@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace PLS
+namespace PLS.CommandBuilders
 {
     public class ListServerCommandBuilder : ICommandBuilder
     {

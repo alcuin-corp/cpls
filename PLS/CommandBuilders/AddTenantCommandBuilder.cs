@@ -2,7 +2,7 @@
 using AutoMapper;
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace PLS
+namespace PLS.CommandBuilders
 {
     public class AddTenantCommandBuilder : ICommandBuilder
     {

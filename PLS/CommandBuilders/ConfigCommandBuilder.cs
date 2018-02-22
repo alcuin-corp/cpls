@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Dynamic;
-using System.IO;
-using System.Linq;
-using AutoMapper.Configuration;
+﻿using System.IO;
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace PLS
+namespace PLS.CommandBuilders
 {
     public static class ConfigCommandBuilderExtensions
     {

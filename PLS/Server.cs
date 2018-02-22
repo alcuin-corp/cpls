@@ -7,6 +7,7 @@ namespace PLS
         [Key]
         public string Id { get; set; }
         public string Hostname { get; set; } = "localhost";
+        public string DefaultBackupDirectory { get; set; }
         public string Login { get; set; } = "sa";
         public string Password { get; set; } = "P@ssw0rd";
     }

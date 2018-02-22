@@ -1,6 +1,6 @@
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace PLS
+namespace PLS.CommandBuilders
 {
     public class GroupCommandBuilder : ICommandBuilder
     {
