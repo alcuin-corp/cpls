@@ -12,31 +12,30 @@ namespace PLS.CommandBuilders
             _db = db;
         }
 
-        public void Apply(CommandLineApplication self)
+        public string Name => "add";
+
+        public void Configure(CommandLineApplication command)
         {
-            self.Command("add", command =>
+            command.AddHelp();
+
+            var nameArg = command.Argument("[name]", "The server name");
+            var hostnameArg = command.Argument("[hostname]", "The server hostname");
+            var loginArg = command.Argument("[login]", "The server login");
+            var passwordArg = command.Argument("[password]", "The server password");
+
+            command.OnExecute(() =>
             {
-                command.AddHelp();
-
-                var nameArg = command.Argument("[name]", "The server name");
-                var hostnameArg = command.Argument("[hostname]", "The server hostname");
-                var loginArg = command.Argument("[login]", "The server login");
-                var passwordArg = command.Argument("[password]", "The server password");
-
-                command.OnExecute(() =>
+                Console.WriteLine($"Creation of server {nameArg.Value} in progress ...");
+                _db.Servers.Add(new Server
                 {
-                    Console.WriteLine($"Creation of server {nameArg.Value} in progress ...");
-                    _db.Servers.Add(new Server
-                    {
-                        Id = nameArg.Value,
-                        Hostname = hostnameArg.Value,
-                        Login = loginArg.Value,
-                        Password = passwordArg.Value
-                    });
-                    _db.SaveChanges();
-                    Console.WriteLine($"Server {nameArg.Value} has been created.");
-                    return 0;
+                    Id = nameArg.Value,
+                    Hostname = hostnameArg.Value,
+                    Login = loginArg.Value,
+                    Password = passwordArg.Value
                 });
+                _db.SaveChanges();
+                Console.WriteLine($"Server {nameArg.Value} has been created.");
+                return 0;
             });
         }
     }

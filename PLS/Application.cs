@@ -14,15 +14,13 @@ namespace PLS
         public static void Parse(params string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-
             var app = BuildContainer();
             var cmdLine = new CommandLineApplication {Name = "PLS"};
             cmdLine.AddHelp();
             var builders = app.GetRequiredService<ICommandBuilder[]>();
-
             foreach (var builder in builders)
             {
-                builder.Apply(cmdLine);
+                cmdLine.Command(builder.Name, builder.Configure);
             }
             cmdLine.Execute(args);
         }
@@ -33,6 +31,7 @@ namespace PLS
             services.AddScoped<AddTenantCommandBuilder>();
             services.AddScoped<AddServerCommandBuilder>();
             services.AddScoped<ListServerCommandBuilder>();
+            services.AddScoped<ListTenantCommandBuilder>();
 
             ICommandBuilder CreateServerCommandBuilder(IServiceProvider provider)
             {
@@ -45,16 +44,22 @@ namespace PLS
             ICommandBuilder CreateTenantCommandBuilder(IServiceProvider provider)
             {
                 return new GroupCommandBuilder("tenant",
-                    provider.GetRequiredService<AddTenantCommandBuilder>()
+                    provider.GetRequiredService<AddTenantCommandBuilder>(),
+                    provider.GetRequiredService<ListTenantCommandBuilder>()
                 );
             }
 
-            services.AddScoped(provider => new []
+            ICommandBuilder[] CreateCommandBuilders(IServiceProvider provider)
             {
-                CreateServerCommandBuilder(provider),
-                CreateTenantCommandBuilder(provider),
-                provider.GetRequiredService<ConfigCommandBuilder>(),
-            });
+                return new[]
+                {
+                    CreateServerCommandBuilder(provider),
+                    CreateTenantCommandBuilder(provider),
+                    provider.GetRequiredService<ConfigCommandBuilder>(),
+                };
+            }
+
+            services.AddScoped(CreateCommandBuilders);
         }
 
         public static string GetOrCreateConfigFolderPath()

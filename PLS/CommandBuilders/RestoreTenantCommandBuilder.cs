@@ -5,17 +5,10 @@ namespace PLS.CommandBuilders
 {
     public class RestoreTenantCommandBuilder : ICommandBuilder
     {
-        public CommandBuilder()
-        {
-        }
+        public string Name => "restore";
 
-        public void Apply(CommandLineApplication target)
+        public void Configure(CommandLineApplication target)
         {
-            target.Command(_config.Name, app =>
-            {
-                _config.Configure(app);
-                app.OnExecute(() => _config.OnExecute());
-            });
         }
     }
 }

@@ -4,6 +4,7 @@ namespace PLS.CommandBuilders
 {
     public interface ICommandBuilder
     {
-        void Apply(CommandLineApplication target);
+        string Name { get; }
+        void Configure(CommandLineApplication command);
     }
 }

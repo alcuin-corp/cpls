@@ -3,26 +3,9 @@ using Microsoft.Extensions.CommandLineUtils;
 
 namespace PLS.CommandBuilders
 {
-    public static class ConfigCommandBuilderExtensions
-    {
-        public static CommandArgument AddUrlArgument(this CommandLineApplication cli)
-        {
-            return cli.Argument("[url]", "The config api url");
-        }
-    }
-
-    public class ConfigCommandBuilder : IConfigCommandBuilder
+    public class ConfigCommandBuilder : ICommandBuilder
     {
         private readonly ApiClientFactory _connect;
-
-        public static (CommandArgument, CommandArgument, CommandArgument, CommandArgument) AddImportExportArguments(CommandLineApplication self)
-        {
-            var urlArg = self.AddUrlArgument();
-            var loginArg = self.Argument("[login]", "The api login");
-            var passwordArg = self.Argument("[password]", "The api password");
-            var fileArg = self.Argument("[file]", "The destination file");
-            return (urlArg, loginArg, passwordArg, fileArg);
-        }
 
         public ConfigCommandBuilder(ApiClientFactory connect)
         {
@@ -35,7 +18,10 @@ namespace PLS.CommandBuilders
 
             self.Description = "Create a export of the targetted application into a JSON file.";
 
-            var (urlArg, loginArg, passwordArg, fileArg) = AddImportExportArguments(self);
+            var urlArg = self.AddUrlArgument();
+            var loginArg = self.AddLoginArgument();
+            var passwordArg = self.AddPasswordArgument();
+            var fileArg = self.AddJsonFileArgument();
 
             self.OnExecute(async () =>
             {
@@ -56,38 +42,29 @@ namespace PLS.CommandBuilders
 
             self.Description = "Import targeted JSON file into an application.";
 
-            var (urlArg, loginArg, passwordArg, fileArg) = AddImportExportArguments(self);
-            var maybeOutputFile = self.Option("-o|--outputFile", "A file in which the import result will be stored.",
-                CommandOptionType.SingleValue);
+            var urlArg = self.AddUrlArgument();
+            var loginArg = self.AddLoginArgument();
+            var passwordArg = self.AddPasswordArgument();
+            var fileArg = self.AddJsonFileArgument();
+            var maybeOutputFile = self.AddResultFileOption();
 
             self.OnExecute(async () =>
             {
                 var api = _connect(urlArg.Value, loginArg.Value, passwordArg.Value);
-                var result = await api.PostConfig(fileArg.Value);
-                if (maybeOutputFile.HasValue())
-                {
-                    var outputFile = maybeOutputFile.Value();
-                    using (var file = File.OpenWrite(outputFile))
-                    using (var writer = new StreamWriter(file))
-                    {
-                        writer.Write(result);
-                    }
-                }
+                maybeOutputFile.WriteResultIfPossible(await api.PostConfig(fileArg.Value));
                 return 0;
             });
         }
 
-        public void Apply(CommandLineApplication self)
+        public string Name => "Name";
+
+        public void Configure(CommandLineApplication command)
         {
-            self.Command("config", command =>
-            {
-                command.AddHelp();
+            command.AddHelp();
 
-                command.Description = "Those commands are related to config import/export from api.";
-                command.Command("export", AddConfigExportCommand);
-                command.Command("import", AddConfigImportCommand);
-            });
+            command.Description = "Those commands are related to config import/export from api.";
+            command.Command("export", AddConfigExportCommand);
+            command.Command("import", AddConfigImportCommand);
         }
-
     }
 }

@@ -1,30 +1,23 @@
-using Microsoft.Extensions.CommandLineUtils;
+﻿using Microsoft.Extensions.CommandLineUtils;
 
 namespace PLS.CommandBuilders
 {
     public class GroupCommandBuilder : ICommandBuilder
     {
-        private readonly string _commandName;
         private readonly ICommandBuilder[] _builders;
 
-        public GroupCommandBuilder(string commandName, params ICommandBuilder[] builders)
+        public GroupCommandBuilder(string name, params ICommandBuilder[] builders)
         {
-            _commandName = commandName;
             _builders = builders;
+            Name = name;
         }
-
-        public void Apply(CommandLineApplication self)
+        public string Name { get; }
+        public void Configure(CommandLineApplication command)
         {
-            self.Command(_commandName, command =>
+            foreach (var builder in _builders)
             {
-                command.AddHelp();
-
-                command.Description = "Those commands are related to server manipulations.";
-                foreach (var builder in _builders)
-                {
-                    builder.Apply(command);
-                }
-            });
+                command.Command(builder.Name, builder.Configure);
+            }
         }
     }
 }

@@ -15,50 +15,49 @@ namespace PLS.CommandBuilders
             _mapper = mapper;
         }
 
-        public void Apply(CommandLineApplication self)
+        public string Name => "add";
+
+        public void Configure(CommandLineApplication command)
         {
-            self.Command("add", command =>
+            command.AddHelp();
+
+            var nameArg = command.Argument("[name]", "The tenant name");
+            var serverIdArg = command.Argument("[server]", "The server hosting this tenant");
+            var appNameArg = command.Argument("[application-name]", "The tenant application name");
+            var publicDbArg = command.Argument("[public-db]", "The tenant's public db");
+            var configDbArg = command.Argument("[config-db]", "The tenant's config db");
+
+            command.OnExecute(() =>
             {
-                command.AddHelp();
+                var server = _db.Servers.Find(serverIdArg.Value);
+                if (server == null)
+                    throw new Exception($"Server '{serverIdArg.Value}' not found ...");
 
-                var nameArg = command.Argument("[name]", "The tenant name");
-                var serverIdArg = command.Argument("[server]", "The server hosting this tenant");
-                var appNameArg = command.Argument("[application-name]", "The tenant application name");
-                var publicDbArg = command.Argument("[public-db]", "The tenant's public db");
-                var configDbArg = command.Argument("[config-db]", "The tenant's config db");
-
-                command.OnExecute(() =>
+                var newTenant = new Tenant
                 {
-                    var server = _db.Servers.Find(serverIdArg.Value);
-                    if (server == null)
-                        throw new Exception($"Server '{serverIdArg.Value}' not found ...");
+                    Id = nameArg.Value,
+                    ServerId = serverIdArg.Value,
+                    AppName = appNameArg.Value,
+                    ConfigDb = configDbArg.Value,
+                    PublicDb = publicDbArg.Value
+                };
 
-                    var newTenant = new Tenant
-                    {
-                        Id = nameArg.Value,
-                        ServerId = serverIdArg.Value,
-                        AppName = appNameArg.Value,
-                        ConfigDb = configDbArg.Value,
-                        PublicDb = publicDbArg.Value
-                    };
+                var tenant = _db.Tenants.Find(newTenant.Id);
+                if (tenant != null)
+                {
+                    Console.WriteLine(
+                        $"Tenant {nameArg.Value} already exists, we update it with the provided values ...");
+                    _mapper.Map(newTenant, tenant);
+                }
+                else
+                {
+                    Console.WriteLine($"Creation of tenant {nameArg.Value} in progress ...");
+                    _db.Tenants.Add(newTenant);
+                }
 
-                    var tenant = _db.Tenants.Find(newTenant.Id);
-                    if (tenant != null)
-                    {
-                        Console.WriteLine(
-                            $"Tenant {nameArg.Value} already exists, we update it with the provided values ...");
-                        _mapper.Map(newTenant, tenant);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Creation of tenant {nameArg.Value} in progress ...");
-                        _db.Tenants.Add(newTenant);
-                    }
-
-                    _db.SaveChanges();
-                    Console.WriteLine("Tenant has been created/updated.");
-                    return 0;
-                });
+                _db.SaveChanges();
+                Console.WriteLine("Tenant has been created/updated.");
+                return 0;
             });
         }
     }

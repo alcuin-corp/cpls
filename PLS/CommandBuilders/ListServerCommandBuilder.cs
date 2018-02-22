@@ -1,33 +1,13 @@
 ﻿using System;
-using System.Linq;
-using Microsoft.Extensions.CommandLineUtils;
+using System.Linq.Expressions;
 
 namespace PLS.CommandBuilders
 {
-    public class ListServerCommandBuilder : ICommandBuilder
+    public class ListServerCommandBuilder : ListCommandBuilder<Server>
     {
-        private readonly PlsDbContext _db;
-
-        public ListServerCommandBuilder(PlsDbContext db)
+        public ListServerCommandBuilder(PlsDbContext db) : base(db)
         {
-            _db = db;
         }
-
-        public void Apply(CommandLineApplication target)
-        {
-            target.Command("list", command =>
-            {
-                command.AddHelp();
-
-                command.OnExecute(() =>
-                {
-                    foreach (var id in _db.Servers.Select(_ => _.Id).ToArray())
-                    {
-                        Console.WriteLine(id);
-                    }
-                    return 0;
-                });
-            });
-        }
+        public override Expression<Func<Server, string>> NameSelector => _ => _.Id;
     }
 }

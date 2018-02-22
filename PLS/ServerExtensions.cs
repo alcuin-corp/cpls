@@ -9,17 +9,6 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace PLS
 {
-    public static class TenantExtensions
-    {
-        public static void SetAppName(this Tenant tenant, string newName)
-        {
-            using (var conn = tenant.Server.OpenConnection())
-            {
-                conn.Execute($"UPDATE [{tenant.ConfigDb}].dbo.Application SET name='{newName}'");
-            }
-        }
-    }
-
     public static class ServerExtensions
     {
         public static IDbConnection OpenConnection(this Server self)
@@ -27,17 +16,18 @@ namespace PLS
             return new SqlConnection($"Server={self.Hostname};User Id={self.Login};Password={self.Password};");
         }
 
-        //
-        //self.switch_to_single_user_mode(db_name)
-        //    task = (f"RESTORE DATABASE [{db_name}]"
-        //f" FROM DISK = N'{join(self.backup_directory, backup_filename)}'"
-        //f" WITH FILE = 1,"
-        //f" {self.create_move_statements(db_name, backup_filename)},"
-        //f" NOUNLOAD, REPLACE, RECOVERY, STATS = 25;")
-        //self.run(task)
-        //    self.switch_to_multi_user_mode(db_name)
+        public static void Backup(this Server self, string database, string backupFile)
+        {
+            using (var conn = self.OpenConnection())
+            {
+                conn.Execute(
+                    $"BACKUP DATABASE [{database}] " +
+                    $"TO DISK = N'{backupFile}' " +
+                    $"WITH NOFORMAT, INIT, SKIP, NOREWIND;");
+            }
+        }
 
-        public static void Restore(this Server self, string backupFile, string database)
+        public static void Restore(this Server self, string backupFile, string dataDirectory, string database)
         {
             if (!File.Exists(backupFile))
             {
@@ -45,12 +35,23 @@ namespace PLS
             }
 
             self.SwitchToSingleUserMode(database);
-            var task =
-                $"RESTORE DATABASE [{database}]" +
-                //f" FROM DISK = N'{join(self.backup_directory, backup_filename)}'"
-                //f" WITH FILE = 1,"
-                //f" {self.create_move_statements(db_name, backup_filename)},"
-                //f" NOUNLOAD, REPLACE, RECOVERY, STATS = 25;")
+            var conn = self.OpenConnection();
+
+            try
+            {
+                var task =
+                    $@"RESTORE DATABASE [{database}]
+                       FROM DISK = N'{backupFile}'
+                       WITH FILE = 1,
+                       {self.CreateMoveStatement(database, dataDirectory, backupFile)},
+                       NOUNLOAD, REPLACE, RECOVERY, STATS = 25;";
+                conn.Execute(task);
+            }
+            finally
+            {
+                conn.Close();
+                self.SwitchMultiUserMode(database);
+            }
         }
 
         public static bool IsDbMultiUser(this Server self, string database)
