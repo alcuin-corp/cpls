@@ -14,6 +14,7 @@ namespace PLS.CommandBuilders
         public string Name { get; }
         public void Configure(CommandLineApplication command)
         {
+            command.AddHelp();
             foreach (var builder in _builders)
             {
                 command.Command(builder.Name, builder.Configure);

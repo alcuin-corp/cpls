@@ -27,11 +27,19 @@ namespace PLS
 
         public static void AddCommandBuilders(this IServiceCollection services)
         {
+            services.AddScoped<TenantServiceFactory>(provider => tenant => new TenantService(tenant,
+                provider.GetRequiredService<PlsDbContext>(),
+                provider.GetRequiredService<ServerServiceFactory>()));
+            services.AddScoped<ServerServiceFactory>(provider => server => new ServerService(server));
+
             services.AddScoped<ConfigCommandBuilder>();
+
             services.AddScoped<AddTenantCommandBuilder>();
+            services.AddScoped<ListTenantCommandBuilder>();
+            services.AddScoped<RestoreTenantCommandBuilder>();
+
             services.AddScoped<AddServerCommandBuilder>();
             services.AddScoped<ListServerCommandBuilder>();
-            services.AddScoped<ListTenantCommandBuilder>();
 
             ICommandBuilder CreateServerCommandBuilder(IServiceProvider provider)
             {
@@ -45,7 +53,8 @@ namespace PLS
             {
                 return new GroupCommandBuilder("tenant",
                     provider.GetRequiredService<AddTenantCommandBuilder>(),
-                    provider.GetRequiredService<ListTenantCommandBuilder>()
+                    provider.GetRequiredService<ListTenantCommandBuilder>(),
+                    provider.GetRequiredService<RestoreTenantCommandBuilder>()
                 );
             }
 

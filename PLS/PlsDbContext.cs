@@ -12,8 +12,6 @@ namespace PLS
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Tenant>()
-                .HasAlternateKey(t => t.AppName);
         }
     }
 

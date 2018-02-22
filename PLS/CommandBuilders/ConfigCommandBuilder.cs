@@ -56,7 +56,7 @@ namespace PLS.CommandBuilders
             });
         }
 
-        public string Name => "Name";
+        public string Name => "config";
 
         public void Configure(CommandLineApplication command)
         {

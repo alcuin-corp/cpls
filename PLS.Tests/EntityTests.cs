@@ -35,6 +35,14 @@ namespace PLS.Tests
         {
             Application.Parse("tenant", "list");
         }
+
+        [Fact]
+        public void FullTest()
+        {
+            Application.Parse("server", "add", "localhost", "localhost", "sa", "P@ssw0rd", "C:\\Program Files\\Microsoft SQL Server\\MSSQL14.MSSQLSERVER\\MSSQL");
+            Application.Parse("tenant", "add", "Alcuin1", "localhost", "Alcuin1", "Alcuin1_ADM");
+            Application.Parse("tenant", "restore", "Alcuin1");
+        }
     }
 
     public class Test2
@@ -75,7 +83,6 @@ namespace PLS.Tests
                 });
                 db.Add(new Tenant
                 {
-                    AppName = "Alcuin1",
                     ConfigDb = "Alcuin1_ADM",
                     PublicDb = "Alcuin1",
                     Id = "Alcuin1",
@@ -86,7 +93,6 @@ namespace PLS.Tests
                 var tenant = db.Find<Tenant>("Alcuin1");
 
                 Assert.Equal("Alcuin1", tenant.Id);
-                Assert.Equal("Alcuin1", tenant.AppName);
                 Assert.Equal("Alcuin1_ADM", tenant.ConfigDb);
                 Assert.Equal("Alcuin1", tenant.PublicDb);
                 Assert.Equal("localhost", tenant.ServerId);

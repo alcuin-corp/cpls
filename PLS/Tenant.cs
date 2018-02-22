@@ -7,8 +7,6 @@ namespace PLS
         [Key]
         public string Id { get; set; }
         [Required]
-        public string AppName { get; set; }
-        [Required]
         public string ConfigDb { get; set; }
         [Required]
         public string PublicDb { get; set; }
