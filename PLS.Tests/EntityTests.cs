@@ -42,6 +42,26 @@ namespace PLS.Tests
         }
 
         [Fact]
+        public void Copy()
+        {
+            var hom = new ServerTasks(new Server
+            {
+                Id = "HOM",
+                Hostname = "HOM-BDD02-2014",
+                Login = "alcuinSQL_HOM",
+                Password = "YFLILKOyqxxG9q9RTWeS"
+            });
+            var server = new ServerTasks(new Server
+            {
+                Id = "localhost",
+                Hostname = "localhost",
+                Login = "sa",
+                Password = "P@ssw0rd"
+            });
+            server.Copy(hom, "MDC_ENSSUP_HOMOL_EVO_ADM");
+        }
+
+        [Fact]
         public void FullTest()
         {
             Application.Parse("server", "add", "localhost", "localhost", "sa", "P@ssw0rd", "C:\\Program Files\\Microsoft SQL Server\\MSSQL14.MSSQLSERVER\\MSSQL");

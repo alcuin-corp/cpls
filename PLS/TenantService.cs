@@ -15,9 +15,9 @@ namespace PLS
     public class TenantService : ITenantService
     {
         private readonly Tenant _tenant;
-        private readonly IServerService _server;
+        private readonly IServerTasks _server;
 
-        public TenantService(Tenant tenant, PlsDbContext db, ServerServiceFactory serverEnhancer)
+        public TenantService(Tenant tenant, PlsDbContext db, ServerTasksFactory serverEnhancer)
         {
             _tenant = tenant ?? throw new ArgumentNullException(nameof(tenant));
             var server = db.Servers.Find(tenant.ServerId);

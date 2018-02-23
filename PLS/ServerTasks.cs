@@ -4,42 +4,17 @@ using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Dapper;
 using Microsoft.EntityFrameworkCore.Internal;
-using Optional.Collections;
 
 namespace PLS
 {
-    public interface IServerService
-    {
-        IDbConnection OpenConnection();
-        string BackupDirectory { get; }
-        string DataDirectory { get; }
-
-        void Backup(string database, string backupFile);
-        void Restore(string backupFile, string database);
-        bool IsDbMultiUser(string database);
-        void SwitchMultiUserMode(string database);
-        void SwitchToSingleUserMode(string database);
-
-        /// <summary>
-        /// List of (LogicalName, PhysicalName)
-        /// </summary>
-        IEnumerable<(string, string)> ReadFilelistFromBackup(string backupFilename);
-
-        IEnumerable<(string, string)> RelocateLogicalFiles(string newName, IEnumerable<(string, string)> fileList);
-        string CreateMoveStatement(string dbName, string backupFilename);
-        void DropDatabase(string database);
-        IEnumerable<string> GetDatabaseNames();
-    }
-
-    public delegate IServerService ServerServiceFactory(Server server);
-
-    public class ServerService : IServerService
+    public class ServerTasks : IServerTasks
     {
         private readonly Server _server;
 
-        public ServerService(Server server)
+        public ServerTasks(Server server)
         {
             _server = server ?? throw new ArgumentNullException(nameof(server));
         }
@@ -47,6 +22,15 @@ namespace PLS
         public IDbConnection OpenConnection()
         {
             return new SqlConnection($"Server={_server.Hostname};User Id={_server.Login};Password={_server.Password};");
+        }
+
+        public string SharedBackupDirectory
+        {
+            get
+            {
+                var path = Path.Combine($"\\\\{_server.Hostname}", "Backup");
+                return !Directory.Exists(path) ? $"[KO] {path}" : path;
+            }
         }
 
         public string BackupDirectory
@@ -73,15 +57,46 @@ namespace PLS
             }
         }
 
+        public static async Task<int> GetCompletion(int sessionId, IDbConnection connStatus)
+        {
+            var sql =  "SELECT CONVERT(NUMERIC(6,2), r.percent_complete) AS Completion, "+
+                       "FROM sys.dm_exec_requests r "+
+                       "WHERE command IN ('RESTORE DATABASE', 'BACKUP DATABASE') "+
+                      $"AND r.session_id = {sessionId}";
+
+            var r = await connStatus.QuerySingleAsync(sql);
+            return r.Completion;
+        }
+
         public void Backup(string database, string backupFile)
         {
             using (var conn = OpenConnection())
             {
-                conn.Execute(
+                conn.ExecuteAsync(
                     $"BACKUP DATABASE [{database}] " +
                     $"TO DISK = N'{backupFile}' " +
                     $"WITH NOFORMAT, INIT, SKIP, NOREWIND;");
             }
+        }
+
+        public void Copy(IServerTasks from, params string[] dbs)
+        {
+            foreach (var db in dbs)
+            {
+                var backup = FetchBackup(from, db);
+                Restore(backup, db);
+            }
+        }
+
+        public string FetchBackup(IServerTasks from, string db)
+        {
+            var backupName = DateTime.Now.PostfixBackup(db + ".bak");
+            var fullPath = Path.Combine(from.BackupDirectory, backupName);
+            var remotePath = Path.Combine(from.SharedBackupDirectory, backupName);
+            var localPath = Path.Combine(BackupDirectory, backupName);
+            from.Backup(db, fullPath);
+            File.Copy(remotePath, localPath);
+            return localPath;
         }
 
         public void Restore(string backupFile, string database)
@@ -97,11 +112,11 @@ namespace PLS
             try
             {
                 var task =
-                    $@"RESTORE DATABASE [{database}]
-                       FROM DISK = N'{backupFile}'
-                       WITH FILE = 1,
-                       {CreateMoveStatement(database, backupFile)},
-                       NOUNLOAD, REPLACE, RECOVERY, STATS = 25;";
+                    $@"RESTORE DATABASE [{database}] " +
+                     $"FROM DISK = N'{backupFile}' " +
+                      "WITH FILE = 1, " +
+                     $"{CreateMoveStatement(database, backupFile)}, " +
+                      "NOUNLOAD, REPLACE, RECOVERY, STATS = 25;";
                 conn.Execute(task);
             }
             finally
@@ -141,9 +156,7 @@ namespace PLS
             }
         }
 
-        /// <summary>
-        /// List of (LogicalName, PhysicalName)
-        /// </summary>
+        /// <inheritdoc />
         public IEnumerable<(string, string)> ReadFilelistFromBackup(string backupFilename)
         {
             using (var conn = OpenConnection())

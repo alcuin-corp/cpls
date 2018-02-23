@@ -4,28 +4,27 @@ using Microsoft.Extensions.CommandLineUtils;
 
 namespace PLS.CommandBuilders
 {
-    public class DbServerCommandBuilder : ICommandBuilder
+    public class DbListServerCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
-        private readonly ServerServiceFactory _s;
+        private readonly ServerTasksFactory _s;
 
-        public DbServerCommandBuilder(PlsDbContext db, ServerServiceFactory s)
+        public DbListServerCommandBuilder(PlsDbContext db, ServerTasksFactory s)
         {
             _db = db;
             _s = s;
         }
-        public string Name => "db";
+
+        public string Name => "db-list";
+
         public void Configure(CommandLineApplication command)
         {
             command.AddHelp();
 
-            var listArg = command.Option("-l|--list", "List all databases", CommandOptionType.NoValue);
             var serverIdArg = command.Option("-i|--server-id", "Select one or several specific server(s)", CommandOptionType.MultipleValue);
             
             command.OnExecute(() =>
             {
-                if (!listArg.HasValue()) return 0;
-
                 var servers = (serverIdArg.HasValue()
                     ? serverIdArg.Values.Select(_ => _db.Servers.Find(_)).Where(_ => _ != null)
                     : _db.Servers).ToList();

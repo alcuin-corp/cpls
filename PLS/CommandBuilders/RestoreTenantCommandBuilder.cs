@@ -4,25 +4,14 @@ using Microsoft.Extensions.CommandLineUtils;
 
 namespace PLS.CommandBuilders
 {
-    public class MigrateTenantCommandBuilder : ICommandBuilder
-    {
-        public string Name => "migrate";
-        public void Configure(CommandLineApplication command)
-        {
-            command.AddHelp();
-            command.Description = "Migrates a tenant to the last compiled version";
-            var nameArg = command.Argument("name", "The tenant name");
-        }
-    }
-
     public class RestoreTenantCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
         private readonly TenantServiceFactory _tenantEnhancer;
-        private readonly ServerServiceFactory _serverEnhancer;
-        public string Name => "restore";
+        private readonly ServerTasksFactory _serverEnhancer;
+        public string Name => "restore-tenant";
 
-        public RestoreTenantCommandBuilder(PlsDbContext db, TenantServiceFactory tenantEnhancer, ServerServiceFactory serverEnhancer)
+        public RestoreTenantCommandBuilder(PlsDbContext db, TenantServiceFactory tenantEnhancer, ServerTasksFactory serverEnhancer)
         {
             _db = db;
             _tenantEnhancer = tenantEnhancer;

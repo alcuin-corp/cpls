@@ -14,7 +14,7 @@ namespace PLS.CommandBuilders
             _mapper = mapper;
         }
 
-        public string Name => "add";
+        public string Name => "add-tenant";
 
         public void Configure(CommandLineApplication command)
         {

@@ -15,7 +15,7 @@ namespace PLS.CommandBuilders
             _mapper = mapper;
         }
 
-        public string Name => "add";
+        public string Name => "add-server";
 
         public void Configure(CommandLineApplication command)
         {

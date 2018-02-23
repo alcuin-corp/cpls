@@ -29,24 +29,28 @@ namespace PLS
         {
             services.AddScoped<TenantServiceFactory>(provider => tenant => new TenantService(tenant,
                 provider.GetRequiredService<PlsDbContext>(),
-                provider.GetRequiredService<ServerServiceFactory>()));
-            services.AddScoped<ServerServiceFactory>(provider => server => new ServerService(server));
+                provider.GetRequiredService<ServerTasksFactory>()));
+            services.AddScoped<ServerTasksFactory>(provider => server => new ServerTasks(server));
 
             services.AddScoped<ConfigCommandBuilder>();
-
-            services.AddScoped<DbServerCommandBuilder>();
-            services.AddScoped<ServerCommandBuilder>();
-            services.AddScoped<TenantCommandBuilder>();
+            services.AddScoped<DbListServerCommandBuilder>();
+            services.AddScoped<DbCopyCommandBuilder>();
+            services.AddScoped<ServerListCommandBuilder>();
+            services.AddScoped<TenantListCommandBuilder>();
             services.AddScoped<AddTenantCommandBuilder>();
             services.AddScoped<RestoreTenantCommandBuilder>();
-
             services.AddScoped<AddServerCommandBuilder>();
 
             services.AddScoped(provider => new ICommandBuilder[]
             {
-                provider.GetRequiredService<ServerCommandBuilder>(),
-                provider.GetRequiredService<TenantCommandBuilder>(),
                 provider.GetRequiredService<ConfigCommandBuilder>(),
+                provider.GetRequiredService<DbListServerCommandBuilder>(),
+                provider.GetRequiredService<DbCopyCommandBuilder>(),
+                provider.GetRequiredService<ServerListCommandBuilder>(),
+                provider.GetRequiredService<TenantListCommandBuilder>(),
+                provider.GetRequiredService<AddTenantCommandBuilder>(),
+                provider.GetRequiredService<RestoreTenantCommandBuilder>(),
+                provider.GetRequiredService<AddServerCommandBuilder>(),
             });
         }
 
