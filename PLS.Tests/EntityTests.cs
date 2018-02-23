@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -42,7 +43,7 @@ namespace PLS.Tests
         }
 
         [Fact]
-        public void Copy()
+        public async Task Copy()
         {
             var hom = new ServerTasks(new Server
             {
@@ -58,7 +59,7 @@ namespace PLS.Tests
                 Login = "sa",
                 Password = "P@ssw0rd"
             });
-            server.Copy(hom, "MDC_ENSSUP_HOMOL_EVO_ADM");
+            await server.CopyAsync(hom, "MDC_ENSSUP_HOMOL_EVO_ADM");
         }
 
         [Fact]

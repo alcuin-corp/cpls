@@ -19,19 +19,15 @@ namespace PLS
             _server = server ?? throw new ArgumentNullException(nameof(server));
         }
 
+        public string ConnectionString =>
+            $"Server={_server.Hostname};User Id={_server.Login};Password={_server.Password};";
+
         public IDbConnection OpenConnection()
         {
-            return new SqlConnection($"Server={_server.Hostname};User Id={_server.Login};Password={_server.Password};");
+            return new SqlConnection(ConnectionString);
         }
 
-        public string SharedBackupDirectory
-        {
-            get
-            {
-                var path = Path.Combine($"\\\\{_server.Hostname}", "Backup");
-                return !Directory.Exists(path) ? $"[KO] {path}" : path;
-            }
-        }
+        public string SharedBackupDirectory => Path.Combine($"\\\\{_server.Hostname}", "Backup");
 
         public string BackupDirectory
         {
@@ -57,44 +53,52 @@ namespace PLS
             }
         }
 
-        public static async Task<int> GetCompletion(int sessionId, IDbConnection connStatus)
-        {
-            var sql =  "SELECT CONVERT(NUMERIC(6,2), r.percent_complete) AS Completion, "+
-                       "FROM sys.dm_exec_requests r "+
-                       "WHERE command IN ('RESTORE DATABASE', 'BACKUP DATABASE') "+
-                      $"AND r.session_id = {sessionId}";
+        // This can be used to fetch information about a task completion.
+        // I deactivated it because we don't need it for the moment.
+        //
+        //public Option<(string, string)> GetCompletion(int sessionId)
+        //{
+        //    using (var conn = OpenConnection())
+        //    {
+        //        var sql = "SELECT " + 
+        //                    " r.percent_complete AS PercentComplete, " +
+        //                    " r.total_elapsed_time AS TotalElapsedTime " +
+        //                  "FROM sys.dm_exec_requests r " +
+        //                  "WHERE command IN ('RESTORE DATABASE', 'BACKUP DATABASE') " +
+        //                  $"AND r.session_id = {sessionId}";
+        //        var result = conn.QuerySingleOrDefault(sql);
+        //        if (result == null) return Option.None<(string, string)>();
+        //        return Option.Some<(string, string)>((result.PercentComplete.ToString(), result.TotalElapsedTime.ToString()));
+        //    }
+        //}
 
-            var r = await connStatus.QuerySingleAsync(sql);
-            return r.Completion;
-        }
-
-        public void Backup(string database, string backupFile)
+        public async Task<int> BackupAsync(string database, string backupFile, IDbConnection conn = null)
         {
-            using (var conn = OpenConnection())
+            using (conn = conn ?? OpenConnection())
             {
-                conn.ExecuteAsync(
-                    $"BACKUP DATABASE [{database}] " +
-                    $"TO DISK = N'{backupFile}' " +
-                    $"WITH NOFORMAT, INIT, SKIP, NOREWIND;");
+                var query = $"BACKUP DATABASE [{database}] " +
+                            $"TO DISK = N'{backupFile}' " +
+                            $"WITH NOFORMAT, INIT, SKIP, NOREWIND, NOUNLOAD, STATS = 10;";
+                return await conn.ExecuteAsync(query, commandTimeout: 0);
             }
         }
 
-        public void Copy(IServerTasks from, params string[] dbs)
+        public async Task CopyAsync(IServerTasks from, params string[] dbs)
         {
             foreach (var db in dbs)
             {
-                var backup = FetchBackup(from, db);
+                var backup = await FetchBackupAsync(from, db);
                 Restore(backup, db);
             }
         }
 
-        public string FetchBackup(IServerTasks from, string db)
+        public async Task<string> FetchBackupAsync(IServerTasks from, string db)
         {
             var backupName = DateTime.Now.PostfixBackup(db + ".bak");
             var fullPath = Path.Combine(from.BackupDirectory, backupName);
             var remotePath = Path.Combine(from.SharedBackupDirectory, backupName);
             var localPath = Path.Combine(BackupDirectory, backupName);
-            from.Backup(db, fullPath);
+            await from.BackupAsync(db, fullPath);
             File.Copy(remotePath, localPath);
             return localPath;
         }
@@ -161,9 +165,8 @@ namespace PLS
         {
             using (var conn = OpenConnection())
             {
-                var results = conn.Query(
-                    $"RESTORE FILELISTONLY " +
-                    $"FROM DISK = N'{backupFilename}'");
+                var results = conn.Query($"RESTORE FILELISTONLY " +
+                                         $"FROM DISK = N'{backupFilename}'");
                 foreach (var row in results)
                 {
                     yield return (row.LogicalName, row.PhysicalName);
@@ -185,12 +188,7 @@ namespace PLS
         {
             var fileList = ReadFilelistFromBackup(backupFilename);
             var pairs = RelocateLogicalFiles(dbName, fileList);
-            var moves = new List<string>();
-            foreach (var (logical, physical) in pairs)
-            {
-                moves.Add($"MOVE N'{logical}' TO N'{physical}'");
-            }
-            return moves.Join(", ");
+            return pairs.Select(pair => $"MOVE N'{pair.Item1}' TO N'{pair.Item2}'").Join();
         }
 
         public void DropDatabase(string database)

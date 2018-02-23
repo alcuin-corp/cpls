@@ -35,6 +35,7 @@ namespace PLS
             services.AddScoped<ConfigCommandBuilder>();
             services.AddScoped<DbListServerCommandBuilder>();
             services.AddScoped<DbCopyCommandBuilder>();
+            services.AddScoped<DbRestoreCommandBuilder>();
             services.AddScoped<ServerListCommandBuilder>();
             services.AddScoped<TenantListCommandBuilder>();
             services.AddScoped<AddTenantCommandBuilder>();
@@ -46,6 +47,7 @@ namespace PLS
                 provider.GetRequiredService<ConfigCommandBuilder>(),
                 provider.GetRequiredService<DbListServerCommandBuilder>(),
                 provider.GetRequiredService<DbCopyCommandBuilder>(),
+                provider.GetRequiredService<DbRestoreCommandBuilder>(),
                 provider.GetRequiredService<ServerListCommandBuilder>(),
                 provider.GetRequiredService<TenantListCommandBuilder>(),
                 provider.GetRequiredService<AddTenantCommandBuilder>(),
