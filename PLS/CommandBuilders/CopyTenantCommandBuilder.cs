@@ -4,24 +4,24 @@ using Microsoft.Extensions.CommandLineUtils;
 
 namespace PLS.CommandBuilders
 {
-    public class TenantCopyCommandBuilder : ICommandBuilder
+    public class CopyTenantCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
         private readonly ServerTasksFactory _st;
         private readonly TenantTasksFactory _tn;
 
-        public TenantCopyCommandBuilder(PlsDbContext db, ServerTasksFactory st, TenantTasksFactory tn)
+        public CopyTenantCommandBuilder(PlsDbContext db, ServerTasksFactory st, TenantTasksFactory tn)
         {
             _db = db;
             _st = st;
             _tn = tn;
         }
 
-        public string Name => "tenant-copy";
+        public string Name => "copy-tenant";
 
         public void Configure(CommandLineApplication command)
         {
-            command.Description = "Copies a tenant from a server to another server";
+            command.Description = "copies a tenant from a server to another server";
 
             var serverNameArg = command.Argument("server", "the source server name");
             var configDbArg = command.Argument("config-db", "the target server's config db");

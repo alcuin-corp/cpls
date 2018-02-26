@@ -18,6 +18,8 @@ namespace PLS.CommandBuilders
 
         public void Configure(CommandLineApplication command)
         {
+            command.Description = "displays a list of all servers stored in local database";
+
             var maybeAll = command.Option("-a|--all", "List all the reachable servers", CommandOptionType.NoValue);
 
             command.OnExecute(() =>

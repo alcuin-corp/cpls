@@ -19,7 +19,9 @@ namespace PLS.CommandBuilders
 
         public void Configure(CommandLineApplication command)
         {
-            var serverIdArg = command.Option("-i|--server-id", "Select one or several specific server(s)", CommandOptionType.MultipleValue);
+            command.Description = "displays a list of all reachable databases in locally stored db server";
+
+            var serverIdArg = command.Option("-i|--server-id", "limits the list to one or several specific server(s)", CommandOptionType.MultipleValue);
             
             command.OnExecute(() =>
             {

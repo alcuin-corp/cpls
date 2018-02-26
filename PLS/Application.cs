@@ -61,8 +61,8 @@ namespace PLS
 
                 provider.Apply<ConfigCommandBuilder>(cmd);
                 provider.Apply<DbListServerCommandBuilder>(cmd);
-                provider.Apply<DbCopyCommandBuilder>(cmd);
-                provider.Apply<DbRestoreCommandBuilder>(cmd);
+                provider.Apply<CopyDbCommandBuilder>(cmd);
+                provider.Apply<RestoreDbCommandBuilder>(cmd);
                 provider.Apply<ServerListCommandBuilder>(cmd);
                 provider.Apply<TenantListCommandBuilder>(cmd);
                 provider.Apply<AddTenantCommandBuilder>(cmd);
@@ -70,7 +70,7 @@ namespace PLS
                 provider.Apply<AddServerCommandBuilder>(cmd);
                 provider.Apply<MigrateTenantCommandBuilder>(cmd);
                 provider.Apply<BackupTenantCommandBuilder>(cmd);
-                provider.Apply<TenantCopyCommandBuilder>(cmd);
+                provider.Apply<CopyTenantCommandBuilder>(cmd);
 
                 return cmd;
             });

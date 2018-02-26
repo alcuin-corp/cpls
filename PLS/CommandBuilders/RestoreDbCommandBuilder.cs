@@ -2,21 +2,23 @@
 
 namespace PLS.CommandBuilders
 {
-    public class DbRestoreCommandBuilder : ICommandBuilder
+    public class RestoreDbCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
         private readonly ServerTasksFactory _st;
 
-        public DbRestoreCommandBuilder(PlsDbContext db, ServerTasksFactory st)
+        public RestoreDbCommandBuilder(PlsDbContext db, ServerTasksFactory st)
         {
             _db = db;
             _st = st;
         }
 
-        public string Name => "db-restore";
+        public string Name => "restore-db";
 
         public void Configure(CommandLineApplication command)
         {
+            command.Description = "restores a database with the given backup file";
+
             var serverIdArg = command.Argument("server", "the server");
             var dbArg = command.Argument("db", "the database");
             var backupArg = command.Argument("backup", "the backup file");

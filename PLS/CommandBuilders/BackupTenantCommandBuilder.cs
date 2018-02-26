@@ -17,7 +17,7 @@ namespace PLS.CommandBuilders
 
         public void Configure(CommandLineApplication target)
         {
-            target.Description = "Backup the tenant's databases";
+            target.Description = "create a backup of the selected tenant's databases";
 
             var nameArg = target.Argument("name", "The tenant name");
 

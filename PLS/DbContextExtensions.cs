@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
 using Omu.ValueInjecter;
 
-namespace PLS.CommandBuilders
+namespace PLS
 {
-    public static class DbExtensions
+    public static class DbContextExtensions
     {
         public static void Upsert<T, TKey>(this PlsDbContext db, T newItem, Expression<Func<T, TKey>> on)
             where T : class

@@ -47,7 +47,7 @@ namespace PLS.CommandBuilders
         public string Name => "migrate-tenant";
         public void Configure(CommandLineApplication command)
         {
-            command.Description = "Migrates a tenant to the last compiled version";
+            command.Description = "migrates a tenant to the last compiled migrations";
             var tenantNameArg = command.Argument("name", "The tenant name");
 
             command.OnExecute(() =>

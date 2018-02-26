@@ -15,6 +15,8 @@ namespace PLS.CommandBuilders
 
         public void Configure(CommandLineApplication command)
         {
+            command.Description = "add a server to the local database";
+
             var nameArg = command.Argument("[name]", "The server name");
             var hostnameArg = command.Argument("[hostname]", "The server hostname");
             var loginArg = command.Argument("[login]", "The server login");

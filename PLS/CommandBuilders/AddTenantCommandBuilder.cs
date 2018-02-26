@@ -15,6 +15,8 @@ namespace PLS.CommandBuilders
 
         public void Configure(CommandLineApplication command)
         {
+            command.Description = "add a tenant to the local database";
+
             var nameArg = command.Argument("[name]", "The tenant name");
             var serverIdArg = command.Argument("[server]", "The server hosting this tenant");
             var publicDbArg = command.Argument("[public-db]", "The tenant's public db");

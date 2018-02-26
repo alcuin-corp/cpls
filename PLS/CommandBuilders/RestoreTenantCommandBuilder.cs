@@ -21,7 +21,7 @@ namespace PLS.CommandBuilders
 
         public void Configure(CommandLineApplication target)
         {
-            target.Description = "Restores the tenant's database to a designated backup";
+            target.Description = "restores the tenant's database to a designated backup";
 
             var nameArg = target.Argument("name", "The tenant name");
             var maybeKeepAppName = target.Option("-k|--keep-appname", "Keep the original application's name", CommandOptionType.NoValue);

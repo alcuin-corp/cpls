@@ -3,21 +3,23 @@ using Omu.ValueInjecter;
 
 namespace PLS.CommandBuilders
 {
-    public class DbCopyCommandBuilder : ICommandBuilder
+    public class CopyDbCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
         private readonly ServerTasksFactory _st;
 
-        public DbCopyCommandBuilder(PlsDbContext db, ServerTasksFactory st)
+        public CopyDbCommandBuilder(PlsDbContext db, ServerTasksFactory st)
         {
             _db = db;
             _st = st;
         }
 
-        public string Name => "db-copy";
+        public string Name => "copy-db";
 
         public void Configure(CommandLineApplication command)
         {
+            command.Description = "copies a database from a server to another server";
+
             var fromArg = command.Argument("source", "the source server id");
             var toArg = command.Argument("target", "the target server id");
             var dbListArg = command.Argument("database", "the databases we want to copy to the target", true);

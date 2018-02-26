@@ -17,8 +17,8 @@ namespace PLS
         {
             services.AddScoped<ConfigCommandBuilder>();
             services.AddScoped<DbListServerCommandBuilder>();
-            services.AddScoped<DbCopyCommandBuilder>();
-            services.AddScoped<DbRestoreCommandBuilder>();
+            services.AddScoped<CopyDbCommandBuilder>();
+            services.AddScoped<RestoreDbCommandBuilder>();
             services.AddScoped<ServerListCommandBuilder>();
             services.AddScoped<TenantListCommandBuilder>();
             services.AddScoped<AddTenantCommandBuilder>();
@@ -26,7 +26,7 @@ namespace PLS
             services.AddScoped<AddServerCommandBuilder>();
             services.AddScoped<MigrateTenantCommandBuilder>();
             services.AddScoped<BackupTenantCommandBuilder>();
-            services.AddScoped<TenantCopyCommandBuilder>();
+            services.AddScoped<CopyTenantCommandBuilder>();
         }
     }
 }
