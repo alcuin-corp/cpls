@@ -10,6 +10,7 @@ namespace PLS
         string BackupDirectory { get; }
         string DataDirectory { get; }
         string SharedBackupDirectory { get; }
+        Server Server { get; }
 
         Task<int> BackupAsync(string database, string backupFile, IDbConnection conn = null);
         void Restore(string backupFile, string database);

@@ -19,8 +19,6 @@ namespace PLS.CommandBuilders
 
         public void Configure(CommandLineApplication command)
         {
-            command.AddHelp();
-
             var serverIdArg = command.Option("-i|--server-id", "Select one or several specific server(s)", CommandOptionType.MultipleValue);
             
             command.OnExecute(() =>

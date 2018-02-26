@@ -12,22 +12,22 @@ namespace PLS
 {
     public class ServerTasks : IServerTasks
     {
-        private readonly Server _server;
-
         public ServerTasks(Server server)
         {
-            _server = server ?? throw new ArgumentNullException(nameof(server));
+            Server = server ?? throw new ArgumentNullException(nameof(server));
         }
 
+        public Server Server { get; }
+
         public string ConnectionString =>
-            $"Server={_server.Hostname};User Id={_server.Login};Password={_server.Password};";
+            $"Server={Server.Hostname};User Id={Server.Login};Password={Server.Password};";
 
         public IDbConnection OpenConnection()
         {
             return new SqlConnection(ConnectionString);
         }
 
-        public string SharedBackupDirectory => Path.Combine($"\\\\{_server.Hostname}", "Backup");
+        public string SharedBackupDirectory => Path.Combine($"\\\\{Server.Hostname}", "Backup");
 
         public string BackupDirectory
         {
@@ -107,7 +107,7 @@ namespace PLS
         {
             if (!File.Exists(backupFile))
             {
-                throw new Exception("Can't restore not existing file.");
+                throw new Exception($"Backup '{backupFile}' is missing.");
             }
 
             SwitchToSingleUserMode(database);

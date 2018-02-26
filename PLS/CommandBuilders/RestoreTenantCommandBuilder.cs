@@ -7,20 +7,20 @@ namespace PLS.CommandBuilders
     public class RestoreTenantCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
-        private readonly TenantServiceFactory _tenantEnhancer;
-        private readonly ServerTasksFactory _serverEnhancer;
+        private readonly TenantTasksFactory _t;
+        private readonly ServerTasksFactory _s;
+
         public string Name => "restore-tenant";
 
-        public RestoreTenantCommandBuilder(PlsDbContext db, TenantServiceFactory tenantEnhancer, ServerTasksFactory serverEnhancer)
+        public RestoreTenantCommandBuilder(PlsDbContext db, TenantTasksFactory t, ServerTasksFactory s)
         {
             _db = db;
-            _tenantEnhancer = tenantEnhancer;
-            _serverEnhancer = serverEnhancer;
+            _t = t;
+            _s = s;
         }
 
         public void Configure(CommandLineApplication target)
         {
-            target.AddHelp();
             target.Description = "Restores the tenant's database to a designated backup";
 
             var nameArg = target.Argument("name", "The tenant name");
@@ -34,14 +34,14 @@ namespace PLS.CommandBuilders
             {
                 var tenant = _db.Tenants.Find(nameArg.Value);
                 _db.Entry(tenant).Reference(_ => _.Server).Load();
-                var hserver = _serverEnhancer(tenant.Server);
-                hserver.Restore(maybeConfigBackup.Values.FirstOrDefault() ?? Path.Combine(hserver.BackupDirectory, nameArg.Value + "_ADM.bak"),
+                var hserver = _s(tenant.Server);
+                hserver.Restore(maybeConfigBackup.Values.FirstOrDefault() ?? Path.Combine(hserver.BackupDirectory, tenant.ConfigDb + ".bak"),
                     tenant.ConfigDb);
-                hserver.Restore(maybePublicBackup.Values.FirstOrDefault() ?? Path.Combine(hserver.BackupDirectory, nameArg.Value + ".bak"),
+                hserver.Restore(maybePublicBackup.Values.FirstOrDefault() ?? Path.Combine(hserver.BackupDirectory, tenant.PublicDb + ".bak"),
                     tenant.PublicDb);
                 if (!maybeKeepAppName.HasValue())
                 {
-                    _tenantEnhancer(tenant).SetAppName(nameArg.Value);
+                    _t(tenant).AppName = nameArg.Value;
                 }
                 return 0;
             });

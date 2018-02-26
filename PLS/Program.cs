@@ -10,7 +10,7 @@ namespace PLS
         {
             try
             {
-                Application.Parse(args);
+                Application.Start(args);
             }
             catch (Exception e)
             {

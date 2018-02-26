@@ -1,25 +1,20 @@
-﻿using AutoMapper;
-using Microsoft.Extensions.CommandLineUtils;
+﻿using Microsoft.Extensions.CommandLineUtils;
 
 namespace PLS.CommandBuilders
 {
     public class AddTenantCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
-        private readonly IMapper _mapper;
 
-        public AddTenantCommandBuilder(PlsDbContext db, IMapper mapper)
+        public AddTenantCommandBuilder(PlsDbContext db)
         {
             _db = db;
-            _mapper = mapper;
         }
 
         public string Name => "add-tenant";
 
         public void Configure(CommandLineApplication command)
         {
-            command.AddHelp();
-
             var nameArg = command.Argument("[name]", "The tenant name");
             var serverIdArg = command.Argument("[server]", "The server hosting this tenant");
             var publicDbArg = command.Argument("[public-db]", "The tenant's public db");
@@ -27,13 +22,14 @@ namespace PLS.CommandBuilders
 
             command.OnExecute(() =>
             {
-                _db.Upsert(_mapper, nameArg.Value, new Tenant
+                _db.Upsert(new Tenant
                 {
                     Id = nameArg.Value,
                     ServerId = serverIdArg.Value,
                     ConfigDb = configDbArg.Value,
                     PublicDb = publicDbArg.Value
-                });
+                }, _ => _.Id);
+                _db.SaveChanges();
                 return 0;
             });
         }

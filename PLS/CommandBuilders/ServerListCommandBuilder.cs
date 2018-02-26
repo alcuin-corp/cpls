@@ -18,8 +18,6 @@ namespace PLS.CommandBuilders
 
         public void Configure(CommandLineApplication command)
         {
-            command.AddHelp();
-
             var maybeAll = command.Option("-a|--all", "List all the reachable servers", CommandOptionType.NoValue);
 
             command.OnExecute(() =>

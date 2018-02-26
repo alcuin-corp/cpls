@@ -4,17 +4,19 @@ namespace PLS.CommandBuilders
 {
     public class HelpDecoratorCommandBuilder : ICommandBuilder
     {
-        private readonly ICommandBuilder _inner;
-        public HelpDecoratorCommandBuilder(ICommandBuilder inner)
+        private readonly ICommandBuilder _self;
+
+        public HelpDecoratorCommandBuilder(ICommandBuilder self)
         {
-            _inner = inner;
+            _self = self;
         }
 
-        public string Name => _inner.Name;
+        public string Name => _self.Name;
+
         public void Configure(CommandLineApplication command)
         {
-            command.AddHelp();
-            _inner.Configure(command);
+            command.HelpOption("-h|--help");
+            _self.Configure(command);
         }
     }
 }

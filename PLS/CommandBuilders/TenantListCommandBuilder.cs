@@ -15,7 +15,6 @@ namespace PLS.CommandBuilders
         public string Name => "tenant-list";
         public void Configure(CommandLineApplication command)
         {
-            command.AddHelp();
             command.OnExecute(() =>
             {
                 foreach (var tenant in _db.Tenants)

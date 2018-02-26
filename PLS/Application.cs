@@ -1,59 +1,23 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Omu.ValueInjecter;
 using PLS.CommandBuilders;
 
 namespace PLS
 {
     public static class Application
     {
-        public static void Parse(params string[] args)
+        public static void Start(params string[] args)
         {
             Console.OutputEncoding = Encoding.UTF8;
-            var app = BuildContainer();
-            var cmdLine = new CommandLineApplication {Name = "PLS"};
-            cmdLine.AddHelp();
-            var builders = app.GetRequiredService<ICommandBuilder[]>();
-            foreach (var builder in builders)
-            {
-                cmdLine.Command(builder.Name, builder.Configure);
-            }
-            cmdLine.Execute(args);
-        }
-
-        public static void AddCommandBuilders(this IServiceCollection services)
-        {
-            services.AddScoped<TenantServiceFactory>(provider => tenant => new TenantService(tenant,
-                provider.GetRequiredService<PlsDbContext>(),
-                provider.GetRequiredService<ServerTasksFactory>()));
-            services.AddScoped<ServerTasksFactory>(provider => server => new ServerTasks(server));
-
-            services.AddScoped<ConfigCommandBuilder>();
-            services.AddScoped<DbListServerCommandBuilder>();
-            services.AddScoped<DbCopyCommandBuilder>();
-            services.AddScoped<DbRestoreCommandBuilder>();
-            services.AddScoped<ServerListCommandBuilder>();
-            services.AddScoped<TenantListCommandBuilder>();
-            services.AddScoped<AddTenantCommandBuilder>();
-            services.AddScoped<RestoreTenantCommandBuilder>();
-            services.AddScoped<AddServerCommandBuilder>();
-
-            services.AddScoped(provider => new ICommandBuilder[]
-            {
-                provider.GetRequiredService<ConfigCommandBuilder>(),
-                provider.GetRequiredService<DbListServerCommandBuilder>(),
-                provider.GetRequiredService<DbCopyCommandBuilder>(),
-                provider.GetRequiredService<DbRestoreCommandBuilder>(),
-                provider.GetRequiredService<ServerListCommandBuilder>(),
-                provider.GetRequiredService<TenantListCommandBuilder>(),
-                provider.GetRequiredService<AddTenantCommandBuilder>(),
-                provider.GetRequiredService<RestoreTenantCommandBuilder>(),
-                provider.GetRequiredService<AddServerCommandBuilder>(),
-            });
+            var container = BuildContainer();
+            var app = container.GetRequiredService<CommandLineApplication>();
+            app.Execute(args);
         }
 
         public static string GetOrCreateConfigFolderPath()
@@ -71,27 +35,71 @@ namespace PLS
         public static IServiceProvider BuildContainer()
         {
             var services = new ServiceCollection();
+
             services.AddSingleton<ApiClientFactory>(ApiClient.Factory);
 
+            services.AddScoped<TenantTasksFactory>(provider => tenant => new TenantTasks(tenant,
+                provider.GetRequiredService<PlsDbContext>(),
+                provider.GetRequiredService<ServerTasksFactory>()));
+            services.AddScoped<ServerTasksFactory>(provider => server => new ServerTasks(server));
+
             services.AddCommandBuilders();
-            services.AddScoped(provider =>
-            {
-                var builder = new MapperConfiguration(expr =>
-                {
-                    expr.CreateMap<Tenant, Tenant>();
-                });
-                return builder.CreateMapper();
-            });
+
             services.AddDbContext<PlsDbContext>(builder =>
             {
                 var dbPath = Path.Combine(GetOrCreateConfigFolderPath(), "pls.db");
                 builder.UseSqlite($"Data Source={dbPath};");
             });
+
+            services.Configure<AlcuinOptions>(Configuration);
+
+            services.AddScoped(provider =>
+            {
+                var cmd = new CommandLineApplication { Name = "PLS" };
+                cmd.HelpOption("-h|--help");
+                cmd.Description = "Powerfull Lannister CLI";
+
+                provider.Apply<ConfigCommandBuilder>(cmd);
+                provider.Apply<DbListServerCommandBuilder>(cmd);
+                provider.Apply<DbCopyCommandBuilder>(cmd);
+                provider.Apply<DbRestoreCommandBuilder>(cmd);
+                provider.Apply<ServerListCommandBuilder>(cmd);
+                provider.Apply<TenantListCommandBuilder>(cmd);
+                provider.Apply<AddTenantCommandBuilder>(cmd);
+                provider.Apply<RestoreTenantCommandBuilder>(cmd);
+                provider.Apply<AddServerCommandBuilder>(cmd);
+                provider.Apply<MigrateTenantCommandBuilder>(cmd);
+                provider.Apply<BackupTenantCommandBuilder>(cmd);
+                provider.Apply<TenantCopyCommandBuilder>(cmd);
+
+                return cmd;
+            });
+
             var container = services.BuildServiceProvider();
 
             var db = container.GetRequiredService<PlsDbContext>();
             db.Database.EnsureCreated();
             return container;
+        }
+
+        private static void Configuration(AlcuinOptions obj)
+        {
+            var jsonSettingsPath = Path.Combine(GetOrCreateConfigFolderPath(), "settings.json");
+            if (!File.Exists(jsonSettingsPath))
+            {
+                var options = JsonConvert.SerializeObject(new AlcuinOptions
+                {
+                    AlcuinRootPath = @"C:\dev\alcuin\alcuin",
+                    MsbuildExe = @"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe",
+                    BackupDirectory = @"C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\Backup",
+                    ConfigMigrationDll = @"C:\dev\alcuin\alcuin\Migration\output\Alcuin.Migration.Configuration.dll",
+                    PublicMigrationDll = @"C:\dev\alcuin\alcuin\Migration\output\Alcuin.Migration.Application.dll",
+                    MigratorExe = @"C:\dev\alcuin\alcuin\Tools\Migrator\Alcuin.Migration.Migrator.Console.exe",
+                }, Formatting.Indented);
+                File.WriteAllText(jsonSettingsPath, options);
+            }
+            var jsonSettings = JsonConvert.DeserializeObject<AlcuinOptions>(File.ReadAllText(jsonSettingsPath));
+            obj.InjectFrom(jsonSettings);
         }
     }
 }

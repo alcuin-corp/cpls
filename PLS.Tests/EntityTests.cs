@@ -29,17 +29,17 @@ namespace PLS.Tests
         [Fact]
         public void ExportAlcuin1()
         {
-            Application.Parse("config", "export", "http://localhost/ConfigApi/Alcuin1", "admin", "123", "alcuin1.json");
+            Application.Start("config", "export", "http://localhost/ConfigApi/Alcuin1", "admin", "123", "alcuin1.json");
         }
         [Fact]
         public void ServerList()
         {
-            Application.Parse("server", "list");
+            Application.Start("server-list");
         }
         [Fact]
         public void ListTenant()
         {
-            Application.Parse("tenant", "list");
+            Application.Start("tenant-list");
         }
 
         [Fact]
@@ -65,9 +65,9 @@ namespace PLS.Tests
         [Fact]
         public void FullTest()
         {
-            Application.Parse("server", "add", "localhost", "localhost", "sa", "P@ssw0rd", "C:\\Program Files\\Microsoft SQL Server\\MSSQL14.MSSQLSERVER\\MSSQL");
-            Application.Parse("tenant", "add", "Alcuin1", "localhost", "Alcuin1", "Alcuin1_ADM");
-            Application.Parse("tenant", "restore", "Alcuin1");
+            Application.Start("server", "add", "localhost", "localhost", "sa", "P@ssw0rd", "C:\\Program Files\\Microsoft SQL Server\\MSSQL14.MSSQLSERVER\\MSSQL");
+            Application.Start("tenant", "add", "Alcuin1", "localhost", "Alcuin1", "Alcuin1_ADM");
+            Application.Start("tenant", "restore", "Alcuin1");
         }
     }
 
