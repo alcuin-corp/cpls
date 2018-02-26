@@ -11,6 +11,7 @@ namespace PLS
         string AppName { get; set; }
         void Restore(string configBackup, string publicBackup, string backupDirectory = null);
         Tenant Tenant { get; }
+        string LastVersion { get; }
     }
 
     public class TenantTasks : ITenantTasks
@@ -24,6 +25,17 @@ namespace PLS
             Tenant = tenant ?? throw new ArgumentNullException(nameof(tenant));
             var server = db.Servers.Find(tenant.ServerId);
             _server = serverEnhancer(server);
+        }
+
+        public string LastVersion
+        {
+            get
+            {
+                using (var conn = _server.OpenConnection())
+                {
+                    return conn.ExecuteScalar<string>($"SELECT TOP 1 Version FROM [{Tenant.ConfigDb}].dbo.Versions ORDER BY Date DESC;");
+                }
+            }
         }
 
         public string AppName
