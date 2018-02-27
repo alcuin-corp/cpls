@@ -43,6 +43,16 @@ namespace PLS.Tests
         }
 
         [Fact]
+        public void EntityTest()
+        {
+            Application.Start(
+                "restore-tenant",
+                "Alcuin1",
+                "-c", @"C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\Backup\app_adm_empty.bak",
+                "-p", @"C:\Program Files\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\Backup\app_empty.bak");
+        }
+
+        [Fact]
         public async Task Copy()
         {
             var hom = new ServerTasks(new Server
