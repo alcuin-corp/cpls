@@ -5,6 +5,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Options;
+using PLS.Dtos;
 
 namespace PLS.CommandBuilders
 {

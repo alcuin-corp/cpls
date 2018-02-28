@@ -2,7 +2,7 @@
 using System.Linq.Expressions;
 using Omu.ValueInjecter;
 
-namespace PLS
+namespace PLS.Utils
 {
     public static class DbContextExtensions
     {

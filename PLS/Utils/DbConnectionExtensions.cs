@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using Dapper;
 
-namespace PLS
+namespace PLS.Utils
 {
     public static class DbConnectionExtensions
     {

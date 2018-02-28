@@ -1,19 +1,10 @@
 ﻿using System;
 using System.IO;
 using Dapper;
+using PLS.Dtos;
 
-namespace PLS
+namespace PLS.Services
 {
-    public delegate ITenantTasks TenantTasksFactory(Tenant tenant);
-
-    public interface ITenantTasks
-    {
-        string AppName { get; set; }
-        void Restore(string configBackup, string publicBackup, string backupDirectory = null);
-        Tenant Tenant { get; }
-        string LastVersion { get; }
-    }
-
     public class TenantTasks : ITenantTasks
     {
         private readonly IServerTasks _server;

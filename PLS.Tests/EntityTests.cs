@@ -1,6 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Web.Administration;
+using PLS.Dtos;
+using PLS.Services;
 using Xunit;
 
 namespace PLS.Tests
@@ -26,6 +29,15 @@ namespace PLS.Tests
 
     public class Test3
     {
+        [Fact]
+        public void TestIis()
+        {
+            var s = new IisService(new ServerManager());
+
+            var pool = s.CreatePool("blabla");
+            s.CreateApplication(pool, "/bidule", @"C:\dev\alcuin\alcuin\Web\Admin\Web\Alcuin.Admin.Web");
+        }
+
         [Fact]
         public void ExportAlcuin1()
         {

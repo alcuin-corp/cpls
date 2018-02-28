@@ -1,13 +1,14 @@
 ﻿using System.IO;
 using Microsoft.Extensions.CommandLineUtils;
+using PLS.Services;
 
 namespace PLS.CommandBuilders
 {
     public class ConfigCommandBuilder : ICommandBuilder
     {
-        private readonly ApiClientFactory _connect;
+        private readonly ConfigApiClientFactory _connect;
 
-        public ConfigCommandBuilder(ApiClientFactory connect)
+        public ConfigCommandBuilder(ConfigApiClientFactory connect)
         {
             _connect = connect;
         }

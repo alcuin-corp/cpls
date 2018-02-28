@@ -3,7 +3,7 @@ using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using PLS.CommandBuilders;
 
-namespace PLS
+namespace PLS.Utils
 {
     public static class ProviderExtensions
     {

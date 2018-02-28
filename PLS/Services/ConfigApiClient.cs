@@ -1,23 +1,23 @@
-﻿using System;
-using System.Net.Http;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using PLS.Utils;
 
-namespace PLS
+namespace PLS.Services
 {
-    public class ApiClient : IApiClient
+    public class ConfigApiClient : IConfigApiClient
     {
         private readonly string _apiUri;
         private readonly string _login;
         private readonly string _password;
         private readonly HttpClient _cli;
 
-        public static IApiClient Factory(string uri, string login, string password)
+        public static IConfigApiClient Factory(string uri, string login, string password)
         {
-            return new ApiClient(uri, login, password);
+            return new ConfigApiClient(uri, login, password);
         }
 
-        public ApiClient(string apiUri, string login, string password)
+        public ConfigApiClient(string apiUri, string login, string password)
         {
             _apiUri = apiUri;
             _login = login;
@@ -48,12 +48,5 @@ namespace PLS
                 _.SetJsonContentFromFile(filename);
             });
         }
-    }
-
-    public interface IApiClient
-    {
-        Task<string> GetToken();
-        Task<string> GetConfig();
-        Task<string> PostConfig(string filename);
     }
 }

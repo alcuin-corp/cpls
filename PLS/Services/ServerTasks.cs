@@ -7,8 +7,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.EntityFrameworkCore.Internal;
+using PLS.Dtos;
+using PLS.Utils;
 
-namespace PLS
+namespace PLS.Services
 {
     public class ServerTasks : IServerTasks
     {

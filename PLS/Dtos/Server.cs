@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PLS
+namespace PLS.Dtos
 {
     public class Server
     {

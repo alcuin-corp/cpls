@@ -2,6 +2,7 @@
 using System.Linq;
 using Microsoft.Extensions.CommandLineUtils;
 using PLS.Gui;
+using PLS.Services;
 
 namespace PLS.CommandBuilders
 {

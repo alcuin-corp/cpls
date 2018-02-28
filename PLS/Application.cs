@@ -7,6 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Omu.ValueInjecter;
 using PLS.CommandBuilders;
+using PLS.Services;
+using PLS.Utils;
 
 namespace PLS
 {
@@ -36,7 +38,7 @@ namespace PLS
         {
             var services = new ServiceCollection();
 
-            services.AddSingleton<ApiClientFactory>(ApiClient.Factory);
+            services.AddSingleton<ConfigApiClientFactory>(ConfigApiClient.Factory);
 
             services.AddScoped<TenantTasksFactory>(provider => tenant => new TenantTasks(tenant,
                 provider.GetRequiredService<PlsDbContext>(),

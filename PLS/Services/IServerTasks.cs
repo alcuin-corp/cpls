@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
+using PLS.Dtos;
 
-namespace PLS
+namespace PLS.Services
 {
     public interface IServerTasks
     {
