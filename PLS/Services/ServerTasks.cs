@@ -85,6 +85,14 @@ namespace PLS.Services
             }
         }
 
+        public void Drop(string database)
+        {
+            using (var conn = OpenConnection())
+            {
+                conn.Execute($"DROP DATABASE [{database}]");
+            }
+        }
+
         public async Task CopyAsync(IServerTasks from, params string[] dbs)
         {
             foreach (var db in dbs)

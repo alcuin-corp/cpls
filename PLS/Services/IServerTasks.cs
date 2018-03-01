@@ -30,5 +30,6 @@ namespace PLS.Services
         IEnumerable<string> GetDatabaseNames();
         Task<string> FetchBackupAsync(IServerTasks from, string db);
         Task CopyAsync(IServerTasks from, params string[] dbs);
+        void Drop(string database);
     }
 }

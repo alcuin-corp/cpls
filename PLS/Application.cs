@@ -73,6 +73,7 @@ namespace PLS
                 provider.Apply<MigrateTenantCommandBuilder>(cmd);
                 provider.Apply<BackupTenantCommandBuilder>(cmd);
                 provider.Apply<CopyTenantCommandBuilder>(cmd);
+                provider.Apply<DropTenantCommandBuilder>(cmd);
 
                 return cmd;
             });

@@ -27,6 +27,7 @@ namespace PLS.Utils
             services.AddScoped<MigrateTenantCommandBuilder>();
             services.AddScoped<BackupTenantCommandBuilder>();
             services.AddScoped<CopyTenantCommandBuilder>();
+            services.AddScoped<DropTenantCommandBuilder>();
         }
     }
 }
