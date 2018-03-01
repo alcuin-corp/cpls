@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.ServiceProcess;
-using System.Threading;
 using Microsoft.Web.Administration;
-using Optional;
 using Optional.Collections;
-using Optional.Unsafe;
 using PLS.Utils;
 
 namespace PLS.Services
@@ -19,53 +16,25 @@ namespace PLS.Services
             _server = server;
         }
 
-        public bool Start()
+        public ApplicationPool GetPool(string pool)
         {
-            using (var ctrl = new ServiceController("w3svc", "."))
-            {
-                if (ctrl.IsRunning())
-                {
-                    return true;
-                }
-                ctrl.Start();
-                ctrl.WaitForStatus(ServiceControllerStatus.Running, new TimeSpan(0, 1, 0));
-            }
-            return true;
+            return _server.ApplicationPools.FirstOrDefault(_ => _.Name == pool) ?? _server.ApplicationPools.Add(pool);
         }
 
-        public Microsoft.Web.Administration.Application CreateApplication(ApplicationPool pool, string path, string physicalPath)
+        public void CreateApplication(string pool, string path, string physicalPath, Site site = null)
         {
-            var site = _server.GetDefaultWebsite();
+            if (!_server.Sites.Any())
+                throw new Exception("No website set in IIS.");
+            var adminPool = GetPool(pool);
+            site = site ?? _server.Sites[0];
+
+            site.Applications
+                .FirstOrNone(_ => _.Path == path)
+                .MatchSome(site.Applications.Remove);
+
             var app = site.Applications.Add(path, physicalPath);
-            app.ApplicationPoolName = pool.Name;
+            app.ApplicationPoolName = adminPool.Name;
             _server.CommitChanges();
-            return app;
-        }
-
-        public ApplicationPool CreatePool(string site)
-        {
-            var pool = _server.ApplicationPools.Add(site);
-            pool.Enable32BitAppOnWin64 = true;
-            pool.ManagedRuntimeVersion = "v4.0";
-            pool.ProcessModel.IdleTimeout = new TimeSpan();
-            pool.ProcessModel.IdentityType = ProcessModelIdentityType.ApplicationPoolIdentity;
-            pool.ProcessModel.PingingEnabled = false;
-            _server.CommitChanges();
-            return pool;
-        }
-
-        public bool Stop()
-        {
-            using (var ctrl = new ServiceController("w3svc", "."))
-            {
-                if (ctrl.IsStopped())
-                {
-                    return true;
-                }
-                ctrl.Stop();
-                ctrl.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 1, 0));
-            }
-            return true;
         }
     }
 }

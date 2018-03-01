@@ -1,23 +1,36 @@
 ﻿using System;
 using System.IO;
 using Dapper;
+using Microsoft.Extensions.Options;
 using PLS.Dtos;
 
 namespace PLS.Services
 {
     public class TenantTasks : ITenantTasks
     {
+        private readonly IOptions<AlcuinOptions> _opt;
+        private readonly IIisService _iis;
         private readonly IServerTasks _server;
 
         public Tenant Tenant { get; }
 
-        public TenantTasks(Tenant tenant, PlsDbContext db, ServerTasksFactory serverEnhancer)
+        public TenantTasks(Tenant tenant, PlsDbContext db, IOptions<AlcuinOptions> opt, ServerTasksFactory serverEnhancer, IIisService iis)
         {
+            _opt = opt;
+            _iis = iis;
             Tenant = tenant ?? throw new ArgumentNullException(nameof(tenant));
             var server = db.Servers.Find(tenant.ServerId);
             _server = serverEnhancer(server);
         }
 
+        public void CreateAdminWebApp()
+        {
+            _iis.CreateApplication("Admin", $"/{AppName}_ADM", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Admin\Web\Alcuin.Admin.Web"));
+        }
+        public void CreatePublicWebApp()
+        {
+            _iis.CreateApplication("Public", $"/{AppName}", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Public\WebMvc\Alcuin.Public.Web"));
+        }
         public string LastVersion
         {
             get

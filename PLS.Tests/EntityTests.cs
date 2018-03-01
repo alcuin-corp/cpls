@@ -34,8 +34,7 @@ namespace PLS.Tests
         {
             var s = new IisService(new ServerManager());
 
-            var pool = s.CreatePool("blabla");
-            s.CreateApplication(pool, "/bidule", @"C:\dev\alcuin\alcuin\Web\Admin\Web\Alcuin.Admin.Web");
+            s.CreateApplication("Admin", "/ENSSUP_HOMOL_EVO_ADM", @"C:\dev\alcuin\alcuin\Web\Admin\Web\Alcuin.Admin.Web");
         }
 
         [Fact]

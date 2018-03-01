@@ -8,5 +8,7 @@ namespace PLS.Services
         void Restore(string configBackup, string publicBackup, string backupDirectory = null);
         Tenant Tenant { get; }
         string LastVersion { get; }
+        void CreateAdminWebApp();
+        void CreatePublicWebApp();
     }
 }

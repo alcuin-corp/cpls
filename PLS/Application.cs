@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.Web.Administration;
 using Newtonsoft.Json;
 using Omu.ValueInjecter;
 using PLS.CommandBuilders;
@@ -38,11 +40,16 @@ namespace PLS
         {
             var services = new ServiceCollection();
 
+            services.AddSingleton(new ServerManager());
+            services.AddScoped<IIisService, IisService>();
+
             services.AddSingleton<ConfigApiClientFactory>(ConfigApiClient.Factory);
 
             services.AddScoped<TenantTasksFactory>(provider => tenant => new TenantTasks(tenant,
                 provider.GetRequiredService<PlsDbContext>(),
-                provider.GetRequiredService<ServerTasksFactory>()));
+                provider.GetRequiredService<IOptions<AlcuinOptions>>(),
+                provider.GetRequiredService<ServerTasksFactory>(),
+                provider.GetRequiredService<IIisService>()));
             services.AddScoped<ServerTasksFactory>(provider => server => new ServerTasks(server));
 
             services.AddCommandBuilders();
@@ -74,6 +81,7 @@ namespace PLS
                 provider.Apply<BackupTenantCommandBuilder>(cmd);
                 provider.Apply<CopyTenantCommandBuilder>(cmd);
                 provider.Apply<DropTenantCommandBuilder>(cmd);
+                provider.Apply<CreateWebAppCommandBuilder>(cmd);
 
                 return cmd;
             });
