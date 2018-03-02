@@ -16,6 +16,7 @@ namespace PLS.CommandBuilders
         public void AddConfigExportCommand(CommandLineApplication self)
         {
             self.Description = "creates an export of the selected application into a local JSON file";
+            self.HelpOption("-h|--help");
 
             var urlArg = self.AddUrlArgument();
             var loginArg = self.AddLoginArgument();
@@ -38,6 +39,7 @@ namespace PLS.CommandBuilders
         public void AddConfigImportCommand(CommandLineApplication self)
         {
             self.Description = "import the local JSON file into an application";
+            self.HelpOption("-h|--help");
 
             var urlArg = self.AddUrlArgument();
             var loginArg = self.AddLoginArgument();

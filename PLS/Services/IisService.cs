@@ -21,6 +21,16 @@ namespace PLS.Services
             return _server.ApplicationPools.FirstOrDefault(_ => _.Name == pool) ?? _server.ApplicationPools.Add(pool);
         }
 
+        public void DropApplication(string path)
+        {
+            var maybeApp =
+                        (from site in _server.Sites
+                        from app in site.Applications
+                        where app.Path == path
+                        select new { App=app, List=site.Applications }).FirstOrNone();
+            maybeApp.MatchSome(pair => { pair.List.Remove(pair.App); });
+        }
+
         public void CreateApplication(string pool, string path, string physicalPath, Site site = null)
         {
             if (!_server.Sites.Any())

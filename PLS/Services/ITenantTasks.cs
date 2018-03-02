@@ -9,6 +9,8 @@ namespace PLS.Services
         Tenant Tenant { get; }
         string LastVersion { get; }
         void CreateAdminWebApp();
+        void DropAdminWebApp();
         void CreatePublicWebApp();
+        void DropPublicWebApp();
     }
 }

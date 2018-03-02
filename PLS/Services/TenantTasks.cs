@@ -22,7 +22,14 @@ namespace PLS.Services
             var server = db.Servers.Find(tenant.ServerId);
             _server = serverEnhancer(server);
         }
-
+        public void DropAdminWebApp()
+        {
+            _iis.DropApplication($"/{AppName}_ADM");
+        }
+        public void DropPublicWebApp()
+        {
+            _iis.CreateApplication("Public", $"/{AppName}", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Public\WebMvc\Alcuin.Public.Web"));
+        }
         public void CreateAdminWebApp()
         {
             _iis.CreateApplication("Admin", $"/{AppName}_ADM", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Admin\Web\Alcuin.Admin.Web"));

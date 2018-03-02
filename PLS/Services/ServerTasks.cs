@@ -87,10 +87,10 @@ namespace PLS.Services
 
         public void Drop(string database)
         {
-            using (var conn = OpenConnection())
+            SwitchToSingleUserMode(database, conn =>
             {
                 conn.Execute($"DROP DATABASE [{database}]");
-            }
+            });
         }
 
         public async Task CopyAsync(IServerTasks from, params string[] dbs)
@@ -161,12 +161,13 @@ namespace PLS.Services
             }
         }
 
-        public void SwitchToSingleUserMode(string database)
+        public void SwitchToSingleUserMode(string database, Action<IDbConnection> action = null)
         {
             if (!DoesDbExist(database) || !IsDbMultiUser(database)) return;
             using (var conn = OpenConnection())
             {
                 conn.Execute($"ALTER DATABASE [{database}] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;");
+                action?.Invoke(conn);
             }
         }
 

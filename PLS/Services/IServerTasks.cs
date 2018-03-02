@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Threading.Tasks;
 using PLS.Dtos;
@@ -17,7 +18,7 @@ namespace PLS.Services
         void Restore(string backupFile, string database);
         bool IsDbMultiUser(string database);
         void SwitchMultiUserMode(string database);
-        void SwitchToSingleUserMode(string database);
+        void SwitchToSingleUserMode(string database, Action<IDbConnection> action = null);
 
         /// <summary>
         /// List of (LogicalName, PhysicalName)

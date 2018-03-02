@@ -23,7 +23,7 @@ namespace PLS.CommandBuilders
             command.Description = "deletes a tenant (optionally with its databases and found backups)";
 
             var tenantNamesArg = command.Argument("tenant", "the tenant(s) id", true);
-            var withDbOption = command.Option("-d|--with-database", "deletes the related databases (use with caution)", CommandOptionType.NoValue);
+            var hardOption = command.Option("--hard", "deletes the related databases and webapps (use with caution)", CommandOptionType.NoValue);
 
             command.OnExecute(() =>
             {
@@ -31,8 +31,10 @@ namespace PLS.CommandBuilders
                 {
                     var tenant = _tt(_db.Find<Tenant>(tenantName));
                     var server = _st(_db.Find<Server>(tenant.Tenant.ServerId));
-                    if (withDbOption.HasValue())
+                    if (hardOption.HasValue())
                     {
+                        tenant.DropAdminWebApp();
+                        tenant.DropPublicWebApp();
                         server.Drop(tenant.Tenant.ConfigDb);
                         server.Drop(tenant.Tenant.PublicDb);
                     }

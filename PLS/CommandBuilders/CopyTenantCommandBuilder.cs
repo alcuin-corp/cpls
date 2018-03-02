@@ -8,42 +8,6 @@ using PLS.Utils;
 
 namespace PLS.CommandBuilders
 {
-    public class CreateWebAppCommandBuilder : ICommandBuilder
-    {
-        private readonly IIisService _iis;
-        private readonly PlsDbContext _db;
-        private readonly TenantTasksFactory _t;
-
-        public CreateWebAppCommandBuilder(IIisService iis, PlsDbContext db, TenantTasksFactory t)
-        {
-            _iis = iis;
-            _db = db;
-            _t = t;
-        }
-
-        public string Name => "create-webapp";
-        public void Configure(CommandLineApplication command)
-        {
-            command.Description = "creates a IIS webapp for the given tenant id (overrides existing app if necessary)";
-
-            var tenantNameArg = command.Argument("tenant", "the tenant for which we want to create a webapp");
-
-            var adminOption = command.Option("-a|--admin", "creates an admin instance in IIS only", CommandOptionType.NoValue);
-            var publicOption = command.Option("-p|--public", "creates a public instance in IIS only", CommandOptionType.NoValue);
-
-            command.OnExecute(() =>
-            {
-                var tenant = _t(_db.Tenants.Find(tenantNameArg.Value));
-                var all = !adminOption.HasValue() && !publicOption.HasValue();
-                if (adminOption.HasValue() || all)
-                    tenant.CreateAdminWebApp();
-                if (publicOption.HasValue() || all)
-                    tenant.CreatePublicWebApp();
-                return 0;
-            });
-        }
-    }
-
     public class CopyTenantCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;

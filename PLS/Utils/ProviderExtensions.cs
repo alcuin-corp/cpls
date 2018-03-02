@@ -29,6 +29,7 @@ namespace PLS.Utils
             services.AddScoped<CopyTenantCommandBuilder>();
             services.AddScoped<DropTenantCommandBuilder>();
             services.AddScoped<CreateWebAppCommandBuilder>();
+            services.AddScoped<DropWebAppCommandBuilder>();
         }
     }
 }
