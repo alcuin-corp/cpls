@@ -1,17 +1,16 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using PLS.Services;
+using PLS.Utils;
 
 namespace PLS.CommandBuilders
 {
     public class BackupTenantCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
-        private readonly ServerTasksFactory _s;
 
-        public BackupTenantCommandBuilder(PlsDbContext db, ServerTasksFactory s)
+        public BackupTenantCommandBuilder(PlsDbContext db)
         {
             _db = db;
-            _s = s;
         }
 
         public string Name => "backup-tenant";
@@ -24,13 +23,11 @@ namespace PLS.CommandBuilders
 
             target.OnExecute(async () =>
             {
-
                 var tenant = _db.Tenants.Find(nameArg.Value);
                 _db.Entry(tenant).Reference(_ => _.Server).Load();
-                var hserver = _s(tenant.Server);
 
-                await hserver.BackupAsync(tenant.ConfigDb, tenant.ConfigDb + ".bak");
-                await hserver.BackupAsync(tenant.PublicDb, tenant.PublicDb + ".bak");
+                await tenant.Server.BackupDatabaseAsync(tenant.ConfigDb, tenant.ConfigDb + ".bak");
+                await tenant.Server.BackupDatabaseAsync(tenant.PublicDb, tenant.PublicDb + ".bak");
 
                 return 0;
             });

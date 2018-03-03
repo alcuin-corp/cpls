@@ -1,6 +1,5 @@
-﻿using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Extensions.CommandLineUtils;
 using PLS.Dtos;
 using PLS.Services;
@@ -11,13 +10,11 @@ namespace PLS.CommandBuilders
     public class CopyTenantCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
-        private readonly ServerTasksFactory _st;
         private readonly TenantTasksFactory _tn;
 
-        public CopyTenantCommandBuilder(PlsDbContext db, ServerTasksFactory st, TenantTasksFactory tn)
+        public CopyTenantCommandBuilder(PlsDbContext db, TenantTasksFactory tn)
         {
             _db = db;
-            _st = st;
             _tn = tn;
         }
 
@@ -39,27 +36,29 @@ namespace PLS.CommandBuilders
 
             command.OnExecute(async () =>
             {
-                var target = _st(maybeTargetServer.HasValue() ?
+                var target = maybeTargetServer.HasValue() ?
                     _db.Servers.Find(maybeTargetServer.Value()) :
-                    _db.Servers.First(_ => _.Hostname == "localhost"));
-                var source = _st(_db.Servers.Find(serverNameArg.Value));
+                    _db.Servers.First(_ => _.Hostname == "localhost");
+                var source = _db.Servers.Find(serverNameArg.Value);
 
-                await target.CopyAsync(source, configDbArg.Value, publicDbArg.Value);
+                await Task.WhenAll(
+                    target.CopyDatabaseAsync(source, configDbArg.Value),
+                    target.CopyDatabaseAsync(source, publicDbArg.Value));
 
                 var newTenant = _tn(new Tenant
                 {
                     ConfigDb = configDbArg.Value,
                     PublicDb = publicDbArg.Value,
-                    ServerId = target.Server.Id,
+                    ServerId = target.Id,
                 });
 
-                var tenantName = maybeAppName.HasValue() ? maybeAppName.Value() : newTenant.AppName;
+                var tenantName = maybeAppName.HasValue() ? maybeAppName.Value() : newTenant.ApplicationName;
                 var tenantId = maybeTenantId.HasValue() ? maybeTenantId.Value() : tenantName;
 
-                newTenant.AppName = tenantName;
-                newTenant.Tenant.Id = tenantId;
+                newTenant.ApplicationName = tenantName;
+                newTenant.Dto.Id = tenantId;
 
-                _db.Upsert(newTenant.Tenant, _ => _.Id);
+                _db.Upsert(newTenant.Dto, _ => _.Id);
                 _db.SaveChanges();
 
                 if (!maybeNoIisSetup.HasValue())

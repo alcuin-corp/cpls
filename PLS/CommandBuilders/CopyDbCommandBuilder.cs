@@ -1,18 +1,17 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using Omu.ValueInjecter;
 using PLS.Services;
+using PLS.Utils;
 
 namespace PLS.CommandBuilders
 {
     public class CopyDbCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
-        private readonly ServerTasksFactory _st;
 
-        public CopyDbCommandBuilder(PlsDbContext db, ServerTasksFactory st)
+        public CopyDbCommandBuilder(PlsDbContext db)
         {
             _db = db;
-            _st = st;
         }
 
         public string Name => "copy-db";
@@ -30,8 +29,8 @@ namespace PLS.CommandBuilders
 
             command.OnExecute(async () =>
             {
-                var src = _st(_db.Servers.Find(fromArg.Value));
-                var target = _st(_db.Servers.Find(toArg.Value));
+                var src = _db.Servers.Find(fromArg.Value);
+                var target = _db.Servers.Find(toArg.Value);
                 if (maybeBackupOnly.HasValue())
                 {
                     foreach (var value in dbListArg.Values)
@@ -41,7 +40,10 @@ namespace PLS.CommandBuilders
                 }
                 else
                 {
-                    await target.CopyAsync(src, dbListArg.Values.ToArray());
+                    foreach (var value in dbListArg.Values)
+                    {
+                        await target.CopyDatabaseAsync(src, value);
+                    }
                 }
                 return 0;
             });

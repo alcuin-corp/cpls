@@ -1,20 +1,19 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using PLS.Dtos;
 using PLS.Services;
+using PLS.Utils;
 
 namespace PLS.CommandBuilders
 {
     public class DropTenantCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
-        private readonly ServerTasksFactory _st;
-        private readonly TenantTasksFactory _tt;
+        private readonly TenantTasksFactory _t;
 
-        public DropTenantCommandBuilder(PlsDbContext db, ServerTasksFactory st, TenantTasksFactory tt)
+        public DropTenantCommandBuilder(PlsDbContext db, TenantTasksFactory t)
         {
             _db = db;
-            _st = st;
-            _tt = tt;
+            _t = t;
         }
 
         public string Name => "drop-tenant";
@@ -29,16 +28,16 @@ namespace PLS.CommandBuilders
             {
                 foreach (var tenantName in tenantNamesArg.Values)
                 {
-                    var tenant = _tt(_db.Find<Tenant>(tenantName));
-                    var server = _st(_db.Find<Server>(tenant.Tenant.ServerId));
+                    var tenant = _t(_db.Find<Tenant>(tenantName));
+                    var server = _db.Find<Server>(tenant.Dto.ServerId);
                     if (hardOption.HasValue())
                     {
                         tenant.DropAdminWebApp();
                         tenant.DropPublicWebApp();
-                        server.Drop(tenant.Tenant.ConfigDb);
-                        server.Drop(tenant.Tenant.PublicDb);
+                        server.DropDatabase(tenant.Dto.ConfigDb);
+                        server.DropDatabase(tenant.Dto.PublicDb);
                     }
-                    _db.Tenants.Remove(tenant.Tenant);
+                    _db.Tenants.Remove(tenant.Dto);
                     _db.SaveChanges();
                 }
 

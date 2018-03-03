@@ -1,17 +1,16 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using PLS.Services;
+using PLS.Utils;
 
 namespace PLS.CommandBuilders
 {
     public class RestoreDbCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
-        private readonly ServerTasksFactory _st;
 
-        public RestoreDbCommandBuilder(PlsDbContext db, ServerTasksFactory st)
+        public RestoreDbCommandBuilder(PlsDbContext db)
         {
             _db = db;
-            _st = st;
         }
 
         public string Name => "restore-db";
@@ -26,11 +25,11 @@ namespace PLS.CommandBuilders
 
             command.OnExecute(() =>
             {
-                var server = _st(_db.Servers.Find(serverIdArg.Value));
+                var server = _db.Servers.Find(serverIdArg.Value);
                 var db = dbArg.Value;
                 var backup = backupArg.Value;
 
-                server.Restore(backup, db);
+                server.RestoreDatabase(backup, db);
 
                 return 0;
             });

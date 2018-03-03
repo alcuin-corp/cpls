@@ -31,14 +31,14 @@ namespace PLS.CommandBuilders
                     var table = Console.OpenStandardOutput().StartTable();
                     table.AddRow(new[] { "Id", "ServerId", "AppName", "Version", "ConfigDb", "PublicDb" });
 
-                    var list = _db.Tenants.ToList().Select(t => new[]
+                    var list = _db.Tenants.ToList().Select(t => _tt(t)).Select(t => new[]
                     {
-                        t.Id,
-                        t.ServerId,
-                        _tt(t).AppName,
-                        _tt(t).LastVersion,
-                        t.ConfigDb,
-                        t.PublicDb,
+                        t.Dto.Id,
+                        t.Dto.ServerId,
+                        t.ApplicationName,
+                        t.LastVersion,
+                        t.Dto.ConfigDb,
+                        t.Dto.PublicDb,
                     }).ToArray();
 
                     table.AddRows(list);

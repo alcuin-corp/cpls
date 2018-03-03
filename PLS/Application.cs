@@ -43,14 +43,14 @@ namespace PLS
             services.AddSingleton(new ServerManager());
             services.AddScoped<IIisService, IisService>();
 
-            services.AddSingleton<ConfigApiClientFactory>(ConfigApiClient.Factory);
+            services.AddSingleton(ConfigApiClient.Factory);
+            services.AddSingleton(ConfigDatabaseService.Factory);
 
             services.AddScoped<TenantTasksFactory>(provider => tenant => new TenantTasks(tenant,
                 provider.GetRequiredService<PlsDbContext>(),
                 provider.GetRequiredService<IOptions<AlcuinOptions>>(),
-                provider.GetRequiredService<ServerTasksFactory>(),
-                provider.GetRequiredService<IIisService>()));
-            services.AddScoped<ServerTasksFactory>(provider => server => new ServerTasks(server));
+                provider.GetRequiredService<IIisService>(),
+                provider.GetRequiredService<ConfigDatabaseServiceFactory>()));
 
             services.AddCommandBuilders();
 

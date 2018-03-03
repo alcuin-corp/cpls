@@ -12,10 +12,7 @@ namespace PLS.Services
         private readonly string _password;
         private readonly HttpClient _cli;
 
-        public static IConfigApiClient Factory(string uri, string login, string password)
-        {
-            return new ConfigApiClient(uri, login, password);
-        }
+        public static ConfigApiClientFactory Factory { get; } = (uri, login, password) => new ConfigApiClient(uri, login, password);
 
         public ConfigApiClient(string apiUri, string login, string password)
         {

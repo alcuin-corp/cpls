@@ -2,18 +2,17 @@
 using System.Linq;
 using Microsoft.Extensions.CommandLineUtils;
 using PLS.Services;
+using PLS.Utils;
 
 namespace PLS.CommandBuilders
 {
     public class DbListServerCommandBuilder : ICommandBuilder
     {
         private readonly PlsDbContext _db;
-        private readonly ServerTasksFactory _s;
 
-        public DbListServerCommandBuilder(PlsDbContext db, ServerTasksFactory s)
+        public DbListServerCommandBuilder(PlsDbContext db)
         {
             _db = db;
-            _s = s;
         }
 
         public string Name => "db-list";
@@ -38,7 +37,7 @@ namespace PLS.CommandBuilders
                         Console.WriteLine($"{server.Id}@{server.Hostname}");
                         Console.ResetColor();
 
-                        var dbnames = _s(server).GetDatabaseNames().ToList();
+                        var dbnames = server.GetDatabaseNames().ToList();
                         if (dbnames.Any())
                         {
                             foreach (var dbname in dbnames)

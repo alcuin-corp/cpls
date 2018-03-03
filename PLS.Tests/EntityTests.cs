@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Web.Administration;
 using PLS.Dtos;
 using PLS.Services;
+using PLS.Utils;
 using Xunit;
 
 namespace PLS.Tests
@@ -66,21 +67,21 @@ namespace PLS.Tests
         [Fact]
         public async Task Copy()
         {
-            var hom = new ServerTasks(new Server
+            var hom = new Server
             {
                 Id = "HOM",
                 Hostname = "HOM-BDD02-2014",
                 Login = "alcuinSQL_HOM",
                 Password = "YFLILKOyqxxG9q9RTWeS"
-            });
-            var server = new ServerTasks(new Server
+            };
+            var server = new Server
             {
                 Id = "localhost",
                 Hostname = "localhost",
                 Login = "sa",
                 Password = "P@ssw0rd"
-            });
-            await server.CopyAsync(hom, "MDC_ENSSUP_HOMOL_EVO_ADM");
+            };
+            await server.CopyDatabaseAsync(hom, "MDC_ENSSUP_HOMOL_EVO_ADM");
         }
 
         [Fact]

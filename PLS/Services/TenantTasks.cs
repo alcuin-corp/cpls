@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Data;
 using System.IO;
-using Dapper;
 using Microsoft.Extensions.Options;
 using PLS.Dtos;
+using PLS.Utils;
 
 namespace PLS.Services
 {
@@ -10,68 +11,53 @@ namespace PLS.Services
     {
         private readonly IOptions<AlcuinOptions> _opt;
         private readonly IIisService _iis;
-        private readonly IServerTasks _server;
+        private readonly IConfigDatabaseService _cfgDb;
+        private readonly Server _server;
 
-        public Tenant Tenant { get; }
+        public Tenant Dto { get; }
 
-        public TenantTasks(Tenant tenant, PlsDbContext db, IOptions<AlcuinOptions> opt, ServerTasksFactory serverEnhancer, IIisService iis)
+        public TenantTasks(Tenant tenant, PlsDbContext db, IOptions<AlcuinOptions> opt, IIisService iis, ConfigDatabaseServiceFactory cfgDbFactory)
         {
             _opt = opt;
             _iis = iis;
-            Tenant = tenant ?? throw new ArgumentNullException(nameof(tenant));
-            var server = db.Servers.Find(tenant.ServerId);
-            _server = serverEnhancer(server);
-        }
-        public void DropAdminWebApp()
-        {
-            _iis.DropApplication($"/{AppName}_ADM");
-        }
-        public void DropPublicWebApp()
-        {
-            _iis.CreateApplication("Public", $"/{AppName}", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Public\WebMvc\Alcuin.Public.Web"));
-        }
-        public void CreateAdminWebApp()
-        {
-            _iis.CreateApplication("Admin", $"/{AppName}_ADM", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Admin\Web\Alcuin.Admin.Web"));
-        }
-        public void CreatePublicWebApp()
-        {
-            _iis.CreateApplication("Public", $"/{AppName}", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Public\WebMvc\Alcuin.Public.Web"));
-        }
-        public string LastVersion
-        {
-            get
-            {
-                using (var conn = _server.OpenConnection())
-                {
-                    return conn.ExecuteScalar<string>($"SELECT TOP 1 Version FROM [{Tenant.ConfigDb}].dbo.Versions ORDER BY Date DESC;");
-                }
-            }
+            Dto = tenant ?? throw new ArgumentNullException(nameof(tenant));
+            _server = db.Servers.Find(tenant.ServerId);
+            _cfgDb = cfgDbFactory(_server.ConnectionString(), tenant.ConfigDb);
         }
 
-        public string AppName
+        public void DropAdminWebApp()
         {
-            get
-            {
-                using (var conn = _server.OpenConnection())
-                {
-                    return conn.ExecuteScalar<string>($"SELECT name FROM [{Tenant.ConfigDb}].dbo.Application;");
-                }
-            }
-            set
-            {
-                using (var conn = _server.OpenConnection())
-                {
-                    conn.Execute($"UPDATE [{Tenant.ConfigDb}].dbo.Application SET name='{value}'");
-                }
-            }
+            _iis.DropApplication($"/{ApplicationName}_ADM");
+        }
+
+        public void DropPublicWebApp()
+        {
+            _iis.CreateApplication("Public", $"/{ApplicationName}", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Public\WebMvc\Alcuin.Public.Web"));
+        }
+
+        public void CreateAdminWebApp()
+        {
+            _iis.CreateApplication("Admin", $"/{ApplicationName}_ADM", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Admin\Web\Alcuin.Admin.Web"));
+        }
+
+        public void CreatePublicWebApp()
+        {
+            _iis.CreateApplication("Public", $"/{ApplicationName}", Path.Combine(_opt.Value.AlcuinRootPath, @"Web\Public\WebMvc\Alcuin.Public.Web"));
+        }
+
+        public string LastVersion => _cfgDb.LastVersion;
+
+        public string ApplicationName
+        {
+            get => _cfgDb.ApplicationName;
+            set => _cfgDb.ApplicationName = value;
         }
 
         public void Restore(string configBackup, string publicBackup, string backupDirectory = null)
         {
-            backupDirectory = backupDirectory ?? _server.BackupDirectory;
-            _server.Restore(Path.Combine(backupDirectory, configBackup), Tenant.ConfigDb);
-            _server.Restore(Path.Combine(backupDirectory, publicBackup), Tenant.PublicDb);
+            backupDirectory = backupDirectory ?? _server.BackupDirectory();
+            _server.RestoreDatabase(Path.Combine(backupDirectory, configBackup), Dto.ConfigDb);
+            _server.RestoreDatabase(Path.Combine(backupDirectory, publicBackup), Dto.PublicDb);
         }
     }
 }

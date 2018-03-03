@@ -4,13 +4,13 @@ namespace PLS.Services
 {
     public interface ITenantTasks
     {
-        string AppName { get; set; }
         void Restore(string configBackup, string publicBackup, string backupDirectory = null);
-        Tenant Tenant { get; }
-        string LastVersion { get; }
+        Tenant Dto { get; }
+        string ApplicationName { get; set; }
         void CreateAdminWebApp();
         void DropAdminWebApp();
         void CreatePublicWebApp();
         void DropPublicWebApp();
+        string LastVersion { get; }
     }
 }
