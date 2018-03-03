@@ -34,7 +34,7 @@ namespace PLS.CommandBuilders
                 var tenant = _t(_db.Tenants.Find(nameArg.Value) ??
                     throw new Exception($"Tenant {nameArg.Value} does not exist, use add-tenant command to create a new tenant before restoring it."));
 
-                _db.Entry(tenant).Reference(_ => _.Dto.Server).Load();
+                _db.Entry(tenant.Dto).Reference(_ => _.Server).Load();
                 var hserver = tenant.Dto.Server;
                 hserver.RestoreDatabase(maybeConfigBackup.Values.FirstOrDefault() ?? Path.Combine(hserver.BackupDirectory(), tenant.Dto.ConfigDb + ".bak"), tenant.Dto.ConfigDb);
                 hserver.RestoreDatabase(maybePublicBackup.Values.FirstOrDefault() ?? Path.Combine(hserver.BackupDirectory(), tenant.Dto.PublicDb + ".bak"), tenant.Dto.PublicDb);

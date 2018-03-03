@@ -31,7 +31,7 @@ namespace PLS.Utils
             => (conn ?? self.CreateConnection()).Use(database).BackupDatabaseAsync(backupFile);
 
         public static void RestoreDatabase(this Server self, string backupFile, string database)
-            => self.CreateConnection().Use(database).RestoreDatabase(database);
+            => self.CreateConnection().Use(database).RestoreDatabase(backupFile);
 
         public static Task<string> FetchBackupAsync(this Server self, Server from, string db)
             => self.CreateConnection().FetchBackupAsync(from.CreateConnection(), from.SharedBackupDirectory(), db);
