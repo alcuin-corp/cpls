@@ -16,9 +16,14 @@ namespace PLS.Services
             _server = server;
         }
 
-        public ApplicationPool GetPool(string pool)
+        public ApplicationPool GetPool(string name)
         {
-            return _server.ApplicationPools.FirstOrDefault(_ => _.Name == pool) ?? _server.ApplicationPools.Add(pool);
+            return _server.ApplicationPools.FirstOrDefault(_ => _.Name == name);
+        }
+
+        public ApplicationPool GetPoolOrCreate(string pool)
+        {
+            return GetPool(pool) ?? _server.ApplicationPools.Add(pool);
         }
 
         public void DropApplication(string path)
@@ -35,7 +40,7 @@ namespace PLS.Services
         {
             if (!_server.Sites.Any())
                 throw new Exception("No website set in IIS.");
-            var adminPool = GetPool(pool);
+            var adminPool = GetPoolOrCreate(pool);
             site = site ?? _server.Sites[0];
 
             site.Applications

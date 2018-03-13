@@ -30,6 +30,7 @@ namespace PLS.Utils
             services.AddScoped<DropTenantCommandBuilder>();
             services.AddScoped<CreateWebAppCommandBuilder>();
             services.AddScoped<DropWebAppCommandBuilder>();
+            services.AddScoped<RecyclePoolCommandBuilder>();
         }
     }
 }

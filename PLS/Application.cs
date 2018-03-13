@@ -83,6 +83,7 @@ namespace PLS
                 provider.Apply<DropTenantCommandBuilder>(cmd);
                 provider.Apply<CreateWebAppCommandBuilder>(cmd);
                 provider.Apply<DropWebAppCommandBuilder>(cmd);
+                provider.Apply<RecyclePoolCommandBuilder>(cmd);
 
                 return cmd;
             });
