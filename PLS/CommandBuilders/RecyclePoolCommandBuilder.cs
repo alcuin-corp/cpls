@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
+using Optional.Unsafe;
 using PLS.Services;
 
 namespace PLS.CommandBuilders
@@ -20,7 +21,8 @@ namespace PLS.CommandBuilders
 
             command.OnExecute(() =>
             {
-                _iis.GetPool(poolNameArg.Value).Recycle();
+                var pool = _iis.GetPool(poolNameArg.Value).ValueOrFailure($"Pool {poolNameArg.Value} does not exist.");
+                pool.Recycle();
                 return 0;
             });
         }

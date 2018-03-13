@@ -2,6 +2,7 @@
 using System.Linq;
 using System.ServiceProcess;
 using Microsoft.Web.Administration;
+using Optional;
 using Optional.Collections;
 using PLS.Utils;
 
@@ -16,14 +17,14 @@ namespace PLS.Services
             _server = server;
         }
 
-        public ApplicationPool GetPool(string name)
+        public Option<ApplicationPool> GetPool(string name)
         {
-            return _server.ApplicationPools.FirstOrDefault(_ => _.Name == name);
+            return _server.ApplicationPools.FirstOrNone(_ => _.Name == name);
         }
 
         public ApplicationPool GetPoolOrCreate(string pool)
         {
-            return GetPool(pool) ?? _server.ApplicationPools.Add(pool);
+            return _server.ApplicationPools.FirstOrDefault(_ => _.Name == pool) ?? _server.ApplicationPools.Add(pool);
         }
 
         public void DropApplication(string path)

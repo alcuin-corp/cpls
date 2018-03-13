@@ -1,4 +1,5 @@
 ﻿using Microsoft.Web.Administration;
+using Optional;
 
 namespace PLS.Services
 {
@@ -6,7 +7,7 @@ namespace PLS.Services
     {
         void CreateApplication(string pool, string path, string physicalPath, Site site = null);
         void DropApplication(string name);
-        ApplicationPool GetPool(string name);
+        Option<ApplicationPool> GetPool(string name);
         ApplicationPool GetPoolOrCreate(string pool);
     }
 }
