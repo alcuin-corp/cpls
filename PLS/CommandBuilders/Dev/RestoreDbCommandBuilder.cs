@@ -1,8 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
-using PLS.Services;
 using PLS.Utils;
 
-namespace PLS.CommandBuilders
+namespace PLS.CommandBuilders.Dev
 {
     public class RestoreDbCommandBuilder : ICommandBuilder
     {

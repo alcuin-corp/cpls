@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using Microsoft.Extensions.CommandLineUtils;
 
-namespace PLS.CommandBuilders
+namespace PLS.CommandBuilders.Dev
 {
     public static class ConfigCommandBuilderExtensions
     {

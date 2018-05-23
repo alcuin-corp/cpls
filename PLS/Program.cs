@@ -1,6 +1,4 @@
 ﻿using System;
-using Microsoft.Extensions.CommandLineUtils;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace PLS
 {

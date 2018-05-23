@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
 using PLS.Services;
 
-namespace PLS.CommandBuilders
+namespace PLS.CommandBuilders.Dev
 {
     public class DropWebAppCommandBuilder : ICommandBuilder
     {

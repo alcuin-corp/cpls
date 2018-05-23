@@ -10,19 +10,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="1.50.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.1" />
+    <PackageReference Include="Dapper" Version="1.50.5" />
+    <PackageReference Include="LanguageExt.Core" Version="3.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.3" />
     <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="2.0.0" />
     <PackageReference Include="Microsoft.Web.Administration" Version="11.1.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.1" />
-    <PackageReference Include="Optional" Version="4.0.0" />
-    <PackageReference Include="ValueInjecter" Version="3.1.1.5" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="ValueInjecter" Version="3.1.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="LanguageExt.Core">
+      <HintPath>..\..\..\..\Users\loup.peluso.ALCUIN\.nuget\packages\languageext.core\3.0.2\lib\netstandard2.0\LanguageExt.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System.Design">
       <HintPath>..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.6.2\System.Design.dll</HintPath>
     </Reference>

@@ -9,6 +9,9 @@ using Microsoft.Web.Administration;
 using Newtonsoft.Json;
 using Omu.ValueInjecter;
 using PLS.CommandBuilders;
+using PLS.CommandBuilders.Agit;
+using PLS.CommandBuilders.Config;
+using PLS.CommandBuilders.Dev;
 using PLS.Services;
 using PLS.Utils;
 
@@ -53,6 +56,7 @@ namespace PLS
                 provider.GetRequiredService<ConfigDatabaseServiceFactory>()));
 
             services.AddCommandBuilders();
+            services.AddScoped<IAgitServices, AgitServices>();
 
             services.AddDbContext<PlsDbContext>(builder =>
             {
@@ -68,22 +72,44 @@ namespace PLS
                 cmd.HelpOption("-h|--help");
                 cmd.Description = "Powerfull Lannister CLI";
 
-                provider.Apply<ConfigCommandBuilder>(cmd);
-                provider.Apply<DbListServerCommandBuilder>(cmd);
-                provider.Apply<CopyDbCommandBuilder>(cmd);
-                provider.Apply<RestoreDbCommandBuilder>(cmd);
-                provider.Apply<ServerListCommandBuilder>(cmd);
-                provider.Apply<TenantListCommandBuilder>(cmd);
-                provider.Apply<AddTenantCommandBuilder>(cmd);
-                provider.Apply<RestoreTenantCommandBuilder>(cmd);
-                provider.Apply<AddServerCommandBuilder>(cmd);
-                provider.Apply<MigrateTenantCommandBuilder>(cmd);
-                provider.Apply<BackupTenantCommandBuilder>(cmd);
-                provider.Apply<CopyTenantCommandBuilder>(cmd);
-                provider.Apply<DropTenantCommandBuilder>(cmd);
-                provider.Apply<CreateWebAppCommandBuilder>(cmd);
-                provider.Apply<DropWebAppCommandBuilder>(cmd);
-                provider.Apply<RecyclePoolCommandBuilder>(cmd);
+                cmd.Command("dev", devCmd =>
+                {
+                    devCmd.HelpOption("--help|-h");
+                    devCmd.Description = "all dev team realted commands (mainly debug and maintenance commands)";
+                    provider.Apply<DbListServerCommandBuilder>(devCmd);
+                    provider.Apply<RestoreDbCommandBuilder>(devCmd);
+                    provider.Apply<ServerListCommandBuilder>(devCmd);
+                    provider.Apply<TenantListCommandBuilder>(devCmd);
+                    provider.Apply<AddTenantCommandBuilder>(devCmd);
+                    provider.Apply<RestoreTenantCommandBuilder>(devCmd);
+                    provider.Apply<AddServerCommandBuilder>(devCmd);
+                    provider.Apply<MigrateTenantCommandBuilder>(devCmd);
+                    provider.Apply<BackupTenantCommandBuilder>(devCmd);
+                    provider.Apply<CopyTenantCommandBuilder>(devCmd);
+                    provider.Apply<DropTenantCommandBuilder>(devCmd);
+                    provider.Apply<CreateWebAppCommandBuilder>(devCmd);
+                    provider.Apply<DropWebAppCommandBuilder>(devCmd);
+                    provider.Apply<RecyclePoolCommandBuilder>(devCmd);
+                    provider.Apply<CopyDbCommandBuilder>(devCmd);
+                });
+
+                cmd.Command("agit", agitCmd => {
+                    agitCmd.HelpOption("--help|-h");
+                    agitCmd.Description = "agit related commands (to handle patches versions)";
+                    provider.Apply<CommitCommandBuilder>(agitCmd);
+                    provider.Apply<FormatPatchBuilder>(agitCmd);
+                    provider.Apply<InitRepositoryBuilder>(agitCmd);
+                    provider.Apply<TagListCommandBuilder>(agitCmd);
+                    provider.Apply<TagCommandBuilder>(agitCmd);
+                });
+
+                cmd.Command("config", configCmd =>
+                {
+                    configCmd.HelpOption("--help|-h");
+                    configCmd.Description = "commands related to the configuration import/export";
+                    provider.Apply<ImportConfigCommandBuilder>(configCmd);
+                    provider.Apply<ExportConfigCommandBuilder>(configCmd);
+                });
 
                 return cmd;
             });

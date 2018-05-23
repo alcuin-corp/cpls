@@ -1,9 +1,7 @@
 ﻿using Microsoft.Extensions.CommandLineUtils;
-using Omu.ValueInjecter;
-using PLS.Services;
 using PLS.Utils;
 
-namespace PLS.CommandBuilders
+namespace PLS.CommandBuilders.Dev
 {
     public class CopyDbCommandBuilder : ICommandBuilder
     {

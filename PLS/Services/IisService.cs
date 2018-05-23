@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Linq;
-using System.ServiceProcess;
+using LanguageExt;
 using Microsoft.Web.Administration;
-using Optional;
-using Optional.Collections;
-using PLS.Utils;
 
 namespace PLS.Services
 {
@@ -19,7 +16,7 @@ namespace PLS.Services
 
         public Option<ApplicationPool> GetPool(string name)
         {
-            return _server.ApplicationPools.FirstOrNone(_ => _.Name == name);
+            return _server.ApplicationPools.Find(_ => _.Name == name);
         }
 
         public ApplicationPool GetPoolOrCreate(string pool)
@@ -30,11 +27,13 @@ namespace PLS.Services
         public void DropApplication(string path)
         {
             var maybeApp =
-                        (from site in _server.Sites
-                        from app in site.Applications
-                        where app.Path == path
-                        select new { App=app, List=site.Applications }).FirstOrNone();
-            maybeApp.MatchSome(pair => { pair.List.Remove(pair.App); });
+                    from site in _server.Sites
+                    from app in site.Applications
+                    where app.Path == path
+                    select new {App = app, List = site.Applications};
+            maybeApp
+                .HeadOrNone()
+                .IfSome(pair => pair.List.Remove(pair.App));
         }
 
         public void CreateApplication(string pool, string path, string physicalPath, Site site = null)
@@ -45,8 +44,8 @@ namespace PLS.Services
             site = site ?? _server.Sites[0];
 
             site.Applications
-                .FirstOrNone(_ => _.Path == path)
-                .MatchSome(site.Applications.Remove);
+                .Find(_ => _.Path == path)
+                .IfSome(_ => site.Applications.Remove(_));
 
             var app = site.Applications.Add(path, physicalPath);
             app.ApplicationPoolName = adminPool.Name;

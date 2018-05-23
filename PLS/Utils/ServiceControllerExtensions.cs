@@ -2,7 +2,6 @@
 using System.Linq;
 using System.ServiceProcess;
 using Microsoft.Web.Administration;
-using Optional;
 
 namespace PLS.Utils
 {

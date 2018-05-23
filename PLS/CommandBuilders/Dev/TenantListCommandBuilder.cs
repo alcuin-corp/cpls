@@ -4,7 +4,7 @@ using Microsoft.Extensions.CommandLineUtils;
 using PLS.Gui;
 using PLS.Services;
 
-namespace PLS.CommandBuilders
+namespace PLS.CommandBuilders.Dev
 {
     public class TenantListCommandBuilder : ICommandBuilder
     {

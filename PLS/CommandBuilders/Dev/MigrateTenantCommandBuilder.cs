@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Options;
 using PLS.Dtos;
 
-namespace PLS.CommandBuilders
+namespace PLS.CommandBuilders.Dev
 {
     public class MigrateTenantCommandBuilder : ICommandBuilder
     {

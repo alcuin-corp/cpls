@@ -2,7 +2,7 @@
 using PLS.Dtos;
 using PLS.Utils;
 
-namespace PLS.CommandBuilders
+namespace PLS.CommandBuilders.Dev
 {
     public class AddServerCommandBuilder : ICommandBuilder
     {

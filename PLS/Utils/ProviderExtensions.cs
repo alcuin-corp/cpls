@@ -2,6 +2,9 @@
 using Microsoft.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using PLS.CommandBuilders;
+using PLS.CommandBuilders.Agit;
+using PLS.CommandBuilders.Config;
+using PLS.CommandBuilders.Dev;
 
 namespace PLS.Utils
 {
@@ -15,7 +18,6 @@ namespace PLS.Utils
 
         public static void AddCommandBuilders(this IServiceCollection services)
         {
-            services.AddScoped<ConfigCommandBuilder>();
             services.AddScoped<DbListServerCommandBuilder>();
             services.AddScoped<CopyDbCommandBuilder>();
             services.AddScoped<RestoreDbCommandBuilder>();
@@ -31,6 +33,13 @@ namespace PLS.Utils
             services.AddScoped<CreateWebAppCommandBuilder>();
             services.AddScoped<DropWebAppCommandBuilder>();
             services.AddScoped<RecyclePoolCommandBuilder>();
+            services.AddScoped<FormatPatchBuilder>();
+            services.AddScoped<ImportConfigCommandBuilder>();
+            services.AddScoped<ExportConfigCommandBuilder>();
+            services.AddScoped<CommitCommandBuilder>();
+            services.AddScoped<InitRepositoryBuilder>();
+            services.AddScoped<TagListCommandBuilder>();
+            services.AddScoped<TagCommandBuilder>();
         }
     }
 }

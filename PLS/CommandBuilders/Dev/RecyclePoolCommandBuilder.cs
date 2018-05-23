@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
-using Optional.Unsafe;
+﻿using System;
+using Microsoft.Extensions.CommandLineUtils;
 using PLS.Services;
 
-namespace PLS.CommandBuilders
+namespace PLS.CommandBuilders.Dev
 {
     public class RecyclePoolCommandBuilder : ICommandBuilder
     {
@@ -21,7 +21,8 @@ namespace PLS.CommandBuilders
 
             command.OnExecute(() =>
             {
-                var pool = _iis.GetPool(poolNameArg.Value).ValueOrFailure($"Pool {poolNameArg.Value} does not exist.");
+                var pool = _iis.GetPool(poolNameArg.Value)
+                    .IfNone(() => throw new Exception($"Pool {poolNameArg.Value} does not exist."));
                 pool.Recycle();
                 return 0;
             });
