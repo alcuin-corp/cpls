@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.CommandLineUtils;
+﻿using System.IO;
+using Microsoft.Extensions.CommandLineUtils;
+using PLS.Agit;
 
 namespace PLS.CommandBuilders.Agit
 {
@@ -17,12 +19,12 @@ namespace PLS.CommandBuilders.Agit
         {
             command.Description = "initialize a repository";
 
-            var directoryArg =
-                command.Argument("folder", "the folder we want to setup for storing application patches");
+            var directoryOpt =
+                command.Option("--directory | -d", "the folder we want to setup for storing application patches", CommandOptionType.SingleValue);
 
             command.OnExecute(() =>
             {
-                _agit.LoadFromDirectory(directoryArg.Value).Initialize();
+                _agit.LoadFromDirectory(directoryOpt.Value() ?? Directory.GetCurrentDirectory()).Initialize();
                 return 0;
             });
         }

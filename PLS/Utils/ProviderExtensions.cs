@@ -33,7 +33,7 @@ namespace PLS.Utils
             services.AddScoped<CreateWebAppCommandBuilder>();
             services.AddScoped<DropWebAppCommandBuilder>();
             services.AddScoped<RecyclePoolCommandBuilder>();
-            services.AddScoped<FormatPatchBuilder>();
+            services.AddScoped<FormatJsonBuilder>();
             services.AddScoped<ImportConfigCommandBuilder>();
             services.AddScoped<ExportConfigCommandBuilder>();
             services.AddScoped<CommitCommandBuilder>();

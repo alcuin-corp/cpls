@@ -1,4 +1,4 @@
-﻿namespace PLS.CommandBuilders.Agit
+﻿namespace PLS.Agit
 {
     public interface IAgitServices
     {

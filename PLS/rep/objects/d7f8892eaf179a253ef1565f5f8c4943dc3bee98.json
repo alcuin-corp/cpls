@@ -1,0 +1,137 @@
+{
+  "Metadata": {
+    "DbVersion": 1520242084675,
+    "ApiVersion": "E661FA5045784C767192E7BD0C769AEE",
+    "Version": 1508147578034,
+    "Date": "Tue, 22 May 2018 15:09:51 GMT",
+    "Duration": 1533.0681,
+    "Origin": "Alcuin1",
+    "Exported": 9,
+    "Errors": 0,
+    "Warnings": 0
+  },
+  "Alerts": [],
+  "Content": {
+    "Added": [
+      {
+        "AggregationTime": 20,
+        "Name": {
+          "fr-FR": "EAA",
+          "en-US": "EAA"
+        },
+        "Id": "00000000-736b-464c-bce7-c016c68787b3",
+        "ObjectType": "AlertsEventsActionsParameters",
+        "HoursAndMinutesWhenEventsRaised": "00:00:00"
+      },
+      {
+        "Name": {
+          "fr-FR": "Application",
+          "en-US": "Application"
+        },
+        "Id": "a4b7cced-7408-4464-baf5-a46d010c29c7",
+        "ObjectType": "Application",
+        "DefaultTimeFormat": true,
+        "MaxOrderByClausesAllowed": 3,
+        "HistoryLimit": 15,
+        "FullTextIndexMode": "None",
+        "ApplicationEnabled": true,
+        "CultureCode": "fr-FR",
+        "DefaultReportMetaTemplateUpdateDate": "",
+        "Version": "X.X.X.X",
+        "DefaultDateFormat": "dd/MM/yyyy",
+        "DefaultTimeZone": "Romance Standard Time",
+        "DisabledUrl": "~/errors/applicationdisabled.aspx",
+        "Customer": "alcuin",
+        "LegacyName": "Alcuin1"
+      },
+      {
+        "Name": {
+          "fr-FR": "Entités et relations métiers",
+          "en-US": "Business Entities And Relations"
+        },
+        "Id": "00000000-736b-464c-bce7-c016c68787b6",
+        "ObjectType": "BusinessData"
+      },
+      {
+        "Name": {
+          "fr-FR": "Paramètres du service de données",
+          "en-US": "Data services parameters"
+        },
+        "Id": "00000000-736b-464c-bce7-c016c68787b5",
+        "ObjectType": "DataServices",
+        "EnablePasswordSynchronization": true,
+        "EnforceSysAccountAuthentication": false,
+        "EnforceHttpsUse": false,
+        "EnableDataServices": false,
+        "ApiKey": "123"
+      },
+      {
+        "ModuleCreatedByWizard": false,
+        "SkillsInherit": false,
+        "EnableJobValidation": false,
+        "OneJobOneEmployee": false,
+        "Name": {
+          "fr-FR": "Gestion des postes",
+          "en-US": "Job careers management"
+        },
+        "Id": "00000000-736b-464c-bce7-c016c68787b2",
+        "ObjectType": "JobCareersModule"
+      },
+      {
+        "Name": {
+          "fr-FR": "Configuration mail",
+          "en-US": "Mail configuration"
+        },
+        "Id": "00000000-736b-464c-bce7-c016c68787b8",
+        "ObjectType": "Mail"
+      },
+      {
+        "Name": {
+          "fr-FR": "Configuration des metaworkflows",
+          "en-US": "Metaworkflow configuration"
+        },
+        "Id": "00000000-736b-464c-bce7-c016c68787b9",
+        "ObjectType": "MetaWorkflowService",
+        "ExecutionPeriod": 1440,
+        "StartTimeSpan": "00:00:00"
+      },
+      {
+        "Name": {
+          "fr-FR": "Réglages de sécurité",
+          "en-US": "Security"
+        },
+        "Id": "00000000-736b-464c-bce7-c016c68787b7",
+        "ObjectType": "Security",
+        "IsAuthenticationThroughUrlEnabled": false,
+        "UseValidationEndDateForExpiration": false,
+        "IsSingleSignOnActivated": false,
+        "PasswordHistoryCount": 0,
+        "PasswordExpirationDelay": 0,
+        "IsMixedAuthenticationEnabled": false,
+        "AuthentificationType": "InternalAuthentification",
+        "BadTriesTimePeriod": 60,
+        "AllowedBadTries": 3,
+        "IsPasswordEmailReminderEnabled": true,
+        "PasswordHashAlgorithm": "SHA1",
+        "PasswordHashSalt": "@1B2c3D4e5F6g7H8"
+      },
+      {
+        "TitleAppRes": {
+          "fr-FR": "alcuin",
+          "en-US": "alcuin"
+        },
+        "Name": {
+          "fr-FR": "Configuration web",
+          "en-US": "Web Configuration"
+        },
+        "Id": "00000000-736b-464c-bce7-c016c68787b4",
+        "ObjectType": "Web",
+        "HideBanner": false,
+        "JobHistoryMax": 10,
+        "MaxConcurrentConnections": 100,
+        "SessionTimeOut": 20,
+        "DefaultRowCount": 50
+      }
+    ]
+  }
+}
