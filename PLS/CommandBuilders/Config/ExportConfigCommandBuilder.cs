@@ -16,9 +16,6 @@ namespace PLS.CommandBuilders.Config
         public string Name => "export";
         public void Configure(CommandLineApplication self)
         {
-            self.Description = "creates an export of the selected application into a local JSON file";
-            self.HelpOption("-h|--help");
-
             var urlArg = self.AddUrlArgument();
             var loginArg = self.AddLoginArgument();
             var passwordArg = self.AddPasswordArgument();

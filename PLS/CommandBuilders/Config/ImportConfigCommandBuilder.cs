@@ -17,9 +17,6 @@ namespace PLS.CommandBuilders.Config
 
         public void Configure(CommandLineApplication self)
         {
-            self.Description = "import the local JSON file into an application";
-            self.HelpOption("-h|--help");
-
             var urlArg = self.AddUrlArgument();
             var loginArg = self.AddLoginArgument();
             var passwordArg = self.AddPasswordArgument();
