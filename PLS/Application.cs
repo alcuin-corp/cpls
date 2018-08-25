@@ -8,9 +8,6 @@ using Microsoft.Extensions.Options;
 using Microsoft.Web.Administration;
 using Newtonsoft.Json;
 using Omu.ValueInjecter;
-using PLS.Agit;
-using PLS.CommandBuilders;
-using PLS.CommandBuilders.Agit;
 using PLS.CommandBuilders.Config;
 using PLS.CommandBuilders.Dev;
 using PLS.Services;
@@ -57,7 +54,6 @@ namespace PLS
                 provider.GetRequiredService<ConfigDatabaseServiceFactory>()));
 
             services.AddCommandBuilders();
-            services.AddScoped<IAgitServices, AgitServices>();
 
             services.AddDbContext<PlsDbContext>(builder =>
             {
@@ -92,16 +88,6 @@ namespace PLS
                     provider.Apply<DropWebAppCommandBuilder>(devCmd);
                     provider.Apply<RecyclePoolCommandBuilder>(devCmd);
                     provider.Apply<CopyDbCommandBuilder>(devCmd);
-                    provider.Apply<FormatJsonBuilder>(devCmd);
-                });
-
-                cmd.Command("agit", agitCmd => {
-                    agitCmd.HelpOption("--help|-h");
-                    agitCmd.Description = "agit related commands (to handle patches versions)";
-                    provider.Apply<CommitCommandBuilder>(agitCmd);
-                    provider.Apply<InitRepositoryBuilder>(agitCmd);
-                    provider.Apply<TagListCommandBuilder>(agitCmd);
-                    provider.Apply<TagCommandBuilder>(agitCmd);
                 });
 
                 cmd.Command("config", configCmd =>

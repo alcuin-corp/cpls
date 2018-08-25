@@ -36,10 +36,6 @@ namespace PLS.Utils
             services.AddScoped<FormatJsonBuilder>();
             services.AddScoped<ImportConfigCommandBuilder>();
             services.AddScoped<ExportConfigCommandBuilder>();
-            services.AddScoped<CommitCommandBuilder>();
-            services.AddScoped<InitRepositoryBuilder>();
-            services.AddScoped<TagListCommandBuilder>();
-            services.AddScoped<TagCommandBuilder>();
         }
     }
 }
