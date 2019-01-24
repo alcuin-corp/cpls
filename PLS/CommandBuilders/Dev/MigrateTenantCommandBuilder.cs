@@ -19,7 +19,7 @@ namespace PLS.CommandBuilders.Dev
             _options = options.Value;
         }
 
-        private void PerformMigration(string db, string dll, Server server)
+        private void PerformMigration(string mainDb, string secondDb, string dll, Server server)
         {
             var proc = new Process
             {
@@ -30,12 +30,14 @@ namespace PLS.CommandBuilders.Dev
                     CreateNoWindow = true,
                     FileName = _options.MigratorExe,
                     Arguments = $" SqlServer2005Dialect \"" +
-                                $"Database={db}; Data Source={server.Hostname}; " +
+                                $"Database={mainDb}; Data Source={server.Hostname}; " +
                                 $"User Id={server.Login};Password={server.Password};" +
-                                $"\" {dll}",
+                                $"\" {dll} -additionalConnString \"" +
+                                $"Database={secondDb}; Data Source={server.Hostname}; " +
+                                $"User Id={server.Login};Password={server.Password};\""
                 }
             };
-            Console.WriteLine($"Migration of {db} on {server.Hostname}");
+            Console.WriteLine($"Migration of {mainDb} on {server.Hostname}");
             Console.WriteLine($"Using {_options.MigratorExe}");
             proc.Start();
             while (!proc.StandardOutput.EndOfStream)
@@ -53,8 +55,8 @@ namespace PLS.CommandBuilders.Dev
             command.OnExecute(() =>
             {
                 var tenant = _db.Tenants.Include(_ => _.Server).First(_ => _.Id == tenantNameArg.Value);
-                PerformMigration(tenant.ConfigDb, _options.ConfigMigrationDll, tenant.Server);
-                PerformMigration(tenant.PublicDb, _options.PublicMigrationDll, tenant.Server);
+                PerformMigration(tenant.ConfigDb, tenant.PublicDb, _options.ConfigMigrationDll, tenant.Server);
+                PerformMigration(tenant.PublicDb, tenant.ConfigDb, _options.PublicMigrationDll, tenant.Server);
                 return 0;
             });
 
