@@ -23,12 +23,12 @@ namespace PLS
             while (cur != null)
             {
                 Console.WriteLine($@"[[ {level++} ]]======================================>");
-                Console.ForegroundColor = ConsoleColor.Blue;
-                Console.WriteLine(e.Message);
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine(cur.Message);
                 Console.ResetColor();
                 Console.WriteLine("----------- STACK -----------");
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(e.StackTrace);
+                Console.WriteLine(cur.StackTrace);
                 Console.ResetColor();
                 cur = cur.InnerException;
             }
