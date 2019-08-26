@@ -36,6 +36,7 @@ namespace PLS.Utils
             services.AddScoped<FormatJsonBuilder>();
             services.AddScoped<ImportConfigCommandBuilder>();
             services.AddScoped<ExportConfigCommandBuilder>();
+            services.AddScoped<InstanceInfoCommandBuilder>();
         }
     }
 }

@@ -36,6 +36,12 @@ namespace PLS.Services
             return await _cli.GetAsync($"{_apiUri}/config", _ => _.SetToken(token));
         }
 
+        public async Task<string> GetInstanceInfo()
+        {
+            var token = await GetToken();
+            return await _cli.GetAsync($"{_apiUri}/info/instance", _ => _.SetToken(token));
+        }
+
         public async Task<string> PostConfig(string filename)
         {
             var token = await GetToken();

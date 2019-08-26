@@ -96,6 +96,7 @@ namespace PLS
                     configCmd.Description = "commands related to the configuration import/export";
                     provider.Apply<ImportConfigCommandBuilder>(configCmd);
                     provider.Apply<ExportConfigCommandBuilder>(configCmd);
+                    provider.Apply<InstanceInfoCommandBuilder>(configCmd);
                 });
 
                 return cmd;

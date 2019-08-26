@@ -7,5 +7,6 @@ namespace PLS.Services
         Task<string> GetToken();
         Task<string> GetConfig();
         Task<string> PostConfig(string filename);
+        Task<string> GetInstanceInfo();
     }
 }
