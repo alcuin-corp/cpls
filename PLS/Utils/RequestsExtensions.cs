@@ -71,7 +71,6 @@ namespace PLS.Utils
         public static void SetJsonContentFromString(this HttpRequestMessage r, string body)
         {
             r.Content = new StringContent(body, Encoding.UTF8, "application/json");
-            r.Headers.TransferEncodingChunked = true;
         }
 
         public static void SetJsonContentFromFile(this HttpRequestMessage r, string filename)

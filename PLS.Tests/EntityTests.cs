@@ -44,6 +44,13 @@ namespace PLS.Tests
         {
             Application.Start("config", "export", "http://localhost/ConfigApi/Alcuin1", "admin", "123", "alcuin1.json");
         }
+
+        [Fact]
+        public void ImportAlcuin2()
+        {
+            Application.Start("config", "import", "http://localhost/api/Alcuin2", "admin", "123", "added_test_merge.json");
+        }
+
         [Fact]
         public void ServerList()
         {
