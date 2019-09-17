@@ -16,7 +16,7 @@ namespace PLS.Services
 
         public static AgitApiClientFactory Factory { get; } = (uri, repo) => new AgitApiClient(uri, repo);
 
-        public AgitApiClient(string apiUri, string repo)
+        protected AgitApiClient(string apiUri, string repo)
         {
             _apiUri = apiUri;
             _repo = repo;

@@ -14,7 +14,7 @@ namespace PLS.Services
 
         public static ConfigApiClientFactory Factory { get; } = (uri, login, password) => new ConfigApiClient(uri, login, password);
 
-        public ConfigApiClient(string apiUri, string login, string password)
+        protected ConfigApiClient(string apiUri, string login, string password)
         {
             _apiUri = apiUri;
             _login = login;
