@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Web.Administration;
 using Newtonsoft.Json;
 using Omu.ValueInjecter;
+using PLS.CommandBuilders.Agit;
 using PLS.CommandBuilders.Config;
 using PLS.CommandBuilders.Dev;
 using PLS.Services;
@@ -45,6 +46,7 @@ namespace PLS
             services.AddScoped<IIisService, IisService>();
 
             services.AddSingleton(ConfigApiClient.Factory);
+            services.AddSingleton(AgitApiClient.Factory);
             services.AddSingleton(ConfigDatabaseService.Factory);
 
             services.AddScoped<TenantTasksFactory>(provider => tenant => new TenantTasks(tenant,
@@ -97,6 +99,17 @@ namespace PLS
                     provider.Apply<ImportConfigCommandBuilder>(configCmd);
                     provider.Apply<ExportConfigCommandBuilder>(configCmd);
                     provider.Apply<InstanceInfoCommandBuilder>(configCmd);
+                });
+
+                cmd.Command("agit", agitCmd =>
+                {
+                    agitCmd.HelpOption("--help|-h");
+                    agitCmd.Description = "commands related to agit";
+                    provider.Apply<AgitCheckoutCommandBuilder>(agitCmd);
+                    provider.Apply<AgitMergeCommandBuilder>(agitCmd);
+                    provider.Apply<AgitPostCommitCommandBuilder>(agitCmd);
+                    provider.Apply<AgitPostBranchCommandBuilder>(agitCmd);
+                    provider.Apply<AgitGetBranchCommandBuilder>(agitCmd);
                 });
 
                 return cmd;

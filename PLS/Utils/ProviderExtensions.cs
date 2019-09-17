@@ -18,6 +18,7 @@ namespace PLS.Utils
 
         public static void AddCommandBuilders(this IServiceCollection services)
         {
+            #region pls stuff
             services.AddScoped<DbListServerCommandBuilder>();
             services.AddScoped<CopyDbCommandBuilder>();
             services.AddScoped<RestoreDbCommandBuilder>();
@@ -34,9 +35,21 @@ namespace PLS.Utils
             services.AddScoped<DropWebAppCommandBuilder>();
             services.AddScoped<RecyclePoolCommandBuilder>();
             services.AddScoped<FormatJsonBuilder>();
+            #endregion
+
+            #region config
             services.AddScoped<ImportConfigCommandBuilder>();
             services.AddScoped<ExportConfigCommandBuilder>();
             services.AddScoped<InstanceInfoCommandBuilder>();
+            #endregion
+
+            #region agit
+            services.AddScoped<AgitCheckoutCommandBuilder>();
+            services.AddScoped<AgitMergeCommandBuilder>();
+            services.AddScoped<AgitPostCommitCommandBuilder>();
+            services.AddScoped<AgitPostBranchCommandBuilder>();
+            services.AddScoped<AgitGetBranchCommandBuilder>();
+            #endregion
         }
     }
 }
