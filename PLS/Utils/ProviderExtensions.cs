@@ -49,6 +49,7 @@ namespace PLS.Utils
             services.AddScoped<AgitPostCommitCommandBuilder>();
             services.AddScoped<AgitPostBranchCommandBuilder>();
             services.AddScoped<AgitGetBranchCommandBuilder>();
+            services.AddScoped<AgitPostTagCommandBuilder>();
             #endregion
         }
     }

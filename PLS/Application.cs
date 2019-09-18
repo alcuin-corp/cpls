@@ -110,6 +110,7 @@ namespace PLS
                     provider.Apply<AgitPostCommitCommandBuilder>(agitCmd);
                     provider.Apply<AgitPostBranchCommandBuilder>(agitCmd);
                     provider.Apply<AgitGetBranchCommandBuilder>(agitCmd);
+                    provider.Apply<AgitPostTagCommandBuilder>(agitCmd);
                 });
 
                 return cmd;

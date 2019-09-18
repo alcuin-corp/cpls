@@ -64,6 +64,18 @@ namespace PLS.Services
             );
         }
 
+        public async Task<string> PostTag(string tagName, string revision)
+        {
+            var json = JsonConvert.SerializeObject(new
+            {
+                Name = tagName,
+                Revision = revision,
+            });
+            return await _cli.PostAsync($"{_apiUri}/{_repo}/tag", requestMessage =>
+                requestMessage.Content = new StringContent(json, Encoding.UTF8, "application/json")
+            );
+        }
+
         public async Task<string> Checkout(string revision)
         {
             return await _cli.GetAsync($"{_apiUri}/{_repo}/checkout", requestMessage => 
